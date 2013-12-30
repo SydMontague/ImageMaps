@@ -26,6 +26,8 @@ import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.craftlancer.imagemaps.metrics.Metrics;
+
 public class ImageMaps extends JavaPlugin implements Listener
 {
     private Map<String, String> placing = new HashMap<String, String>();
@@ -41,6 +43,16 @@ public class ImageMaps extends JavaPlugin implements Listener
         loadMaps();
         getCommand("imagemap").setExecutor(new ImageMapCommand(this));
         getServer().getPluginManager().registerEvents(this, this);
+        
+        try
+        {
+            Metrics metrics = new Metrics(this);
+            metrics.start();
+        }
+        catch (IOException e)
+        {
+            getLogger().severe("Failed to load Metrics!");
+        }
     }
     
     @Override
