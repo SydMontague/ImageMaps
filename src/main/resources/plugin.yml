@@ -1,0 +1,7 @@
+main: de.craftlancer.imagemaps.ImageMaps
+author: SydMontague
+version: ${project.version}
+name: ImageMaps
+commands:
+    imagemap:
+        usage: "/imagemap <file> - then rightlick on a block"
