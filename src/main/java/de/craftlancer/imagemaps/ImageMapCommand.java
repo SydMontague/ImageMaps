@@ -31,15 +31,15 @@ public class ImageMapCommand implements TabExecutor
     
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
-        if (!sender.hasPermission("imagemaps.command") || !(sender instanceof Player))
-            return false;
+        if (!sender.hasPermission("imagemaps.use") || !(sender instanceof Player))
+            return true;
         
         if (args.length < 1)
             return false;
         
         plugin.startPlacing((Player) sender, args[0]);
         
-        sender.sendMessage("started placing");
+        sender.sendMessage("Started placing of " + args[0] + ". Rightclick on a block, that shall be the upper left conor.");
         
         return true;
     }

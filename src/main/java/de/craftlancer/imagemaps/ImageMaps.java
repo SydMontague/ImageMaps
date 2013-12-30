@@ -38,7 +38,7 @@ public class ImageMaps extends JavaPlugin implements Listener
     public void onEnable()
     {
         if (!new File(getDataFolder(), "images").exists())
-            new File(getDataFolder(), "images").mkdir();
+            new File(getDataFolder(), "images").mkdirs();
         
         loadMaps();
         getCommand("imagemap").setExecutor(new ImageMapCommand(this));
