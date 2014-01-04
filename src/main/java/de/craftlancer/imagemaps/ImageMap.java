@@ -27,4 +27,16 @@ public class ImageMap
     {
         return y;
     }
+    
+    public boolean isSimilar(String file, int x2, int y2)
+    {
+        if (!getImage().equalsIgnoreCase(file))
+            return false;
+        if (getX() != x2)
+            return false;
+        if (getY() != y2)
+            return false;
+
+        return true;
+    }
 }

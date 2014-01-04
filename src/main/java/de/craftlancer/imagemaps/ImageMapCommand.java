@@ -11,13 +11,14 @@ import org.bukkit.entity.Player;
 
 public class ImageMapCommand implements TabExecutor
 {
-    ImageMaps plugin;
+    private ImageMaps plugin;
     
     public ImageMapCommand(ImageMaps plugin)
     {
         this.plugin = plugin;
     }
     
+    @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args)
     {
         switch (args.length)
@@ -29,6 +30,7 @@ public class ImageMapCommand implements TabExecutor
         }
     }
     
+    @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
         if (!sender.hasPermission("imagemaps.use") || !(sender instanceof Player))

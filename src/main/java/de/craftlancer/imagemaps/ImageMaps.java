@@ -66,19 +66,12 @@ public class ImageMaps extends JavaPlugin implements Listener
         placing.put(p.getName(), image);
     }
     
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onInteract(PlayerInteractEvent e)
+    public boolean placeImage(Block block, BlockFace face, String file)
     {
-        if (!e.hasBlock())
-            return;
-        
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
-            return;
-        
         int xMod = 0;
         int zMod = 0;
         
-        switch (e.getBlockFace())
+        switch (face)
         {
             case EAST:
                 zMod = -1;
@@ -93,70 +86,90 @@ public class ImageMaps extends JavaPlugin implements Listener
                 xMod = -1;
                 break;
             default:
-                return;
+                getLogger().severe("Someone tried to create an image with an invalid block facing");
+                return false;
         }
         
-        if (!placing.containsKey(e.getPlayer().getName()))
-            return;
+        BufferedImage image = loadImage(file);
         
-        BufferedImage image;
-        try
+        if (image == null)
         {
-            image = ImageIO.read(new File(getDataFolder(), "images" + File.separatorChar + placing.get(e.getPlayer().getName())));
-        }
-        catch (IOException e1)
-        {
-            e1.printStackTrace();
-            return;
+            getLogger().severe("Someone tried to create an image with an invalid file!");
+            return false;
         }
         
-        Block b = e.getClickedBlock().getRelative(e.getBlockFace());
+        Block b = block.getRelative(face);
         
         int width = (int) Math.ceil((double) image.getWidth() / (double) 128);
         int height = (int) Math.ceil((double) image.getHeight() / (double) 128);
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
-                if (!e.getClickedBlock().getRelative(x * xMod, -y, x * zMod).getType().isSolid())
+                if (!block.getRelative(x * xMod, -y, x * zMod).getType().isSolid())
                 {
-                    e.getPlayer().sendMessage("There is not enough space for this image.");
-                    return;
+                    getLogger().info("fail");
+                    return false;
                 }
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
-                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), placing.get(e.getPlayer().getName()), e.getBlockFace(), x * 128, y * 128);
+                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * 128, y * 128, file);
+        
+        return true;
+    }
+    
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    public void onInteract(PlayerInteractEvent e)
+    {
+        if (!e.hasBlock())
+            return;
+        
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+        
+        if (!placing.containsKey(e.getPlayer().getName()))
+            return;
+        
+        if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getName())))
+            e.getPlayer().sendMessage("Can't place the image here!");
         
         placing.remove(e.getPlayer().getName());
     }
     
-    @SuppressWarnings("deprecation")
-    private void setItemFrame(Block bb, String image, BlockFace face, int x, int y)
+    private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, String file)
     {
-        BufferedImage bimage = loadImage(image);
-        
-        if (bimage == null)
-        {
-            getLogger().severe("Someone tried to create an image with an invalid file!");
-            return;
-        }
-        
         bb.setType(Material.AIR);
         ItemFrame i = bb.getWorld().spawn(bb.getRelative(face.getOppositeFace()).getLocation(), ItemFrame.class);
         i.teleport(bb.getLocation());
         i.setFacingDirection(face, true);
         
-        MapView map = getServer().createMap(bb.getWorld());
+        ItemStack item = getMapItem(file, x, y, image);
+        i.setItem(item);
+        
+        maps.put(item.getDurability(), new ImageMap(file, x, y));
+    }
+    
+    @SuppressWarnings("deprecation")
+    private ItemStack getMapItem(String file, int x, int y, BufferedImage image)
+    {
+        ItemStack item = new ItemStack(Material.MAP);
+        
+        for (Entry<Short, ImageMap> entry : maps.entrySet())
+            if (entry.getValue().isSimilar(file, x, y))
+            {
+                item.setDurability(entry.getKey());
+                return item;
+            }
+        
+        MapView map = getServer().createMap(getServer().getWorlds().get(0));
         for (MapRenderer r : map.getRenderers())
             map.removeRenderer(r);
         
-        ItemStack item = new ItemStack(Material.MAP);
+        map.addRenderer(new ImageMapRenderer(image, x, y));
+        
         item.setDurability(map.getId());
         
-        i.setItem(item);
-        
-        map.addRenderer(new ImageMapRenderer(bimage, x, y));
-        maps.put(map.getId(), new ImageMap(image, x, y));
+        return item;
     }
     
     @SuppressWarnings("deprecation")
