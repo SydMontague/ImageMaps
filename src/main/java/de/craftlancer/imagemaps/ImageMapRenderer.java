@@ -11,6 +11,7 @@ import org.bukkit.map.MapView;
 public class ImageMapRenderer extends MapRenderer
 {
     private Image image = null;
+    private boolean first = true;
     
     public ImageMapRenderer(BufferedImage image, int x1, int y1)
     {
@@ -28,8 +29,6 @@ public class ImageMapRenderer extends MapRenderer
         
         this.image = image.getSubimage(x1, y1, x2, y2);
     }
-    
-    boolean first = true;
     
     @Override
     public void render(MapView view, MapCanvas canvas, Player player)

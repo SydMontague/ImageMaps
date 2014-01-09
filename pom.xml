@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.craftlancer.imagemaps</groupId>
   <artifactId>ImageMaps</artifactId>
-  <version>0.3-SNAPSHOT</version>
+  <version>0.2.1</version>
   <name>ImageMaps</name>
   <description>Draw Images on maps!</description>
   <properties>
@@ -25,11 +25,11 @@
   <build>
     <resources>
       <resource>
-        <directory>./src/main/resources</directory>
+        <directory>${basedir}/src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
-    <finalName>ImageMaps</finalName>
+    <finalName>${project.name}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

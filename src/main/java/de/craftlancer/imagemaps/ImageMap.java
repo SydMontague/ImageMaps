@@ -36,7 +36,7 @@ public class ImageMap
             return false;
         if (getY() != y2)
             return false;
-
+        
         return true;
     }
 }

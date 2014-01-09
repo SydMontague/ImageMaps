@@ -195,8 +195,8 @@ public class ImageMaps extends JavaPlugin implements Listener
             
             if (bimage == null)
             {
-                getLogger().warning("Image file image not found, removing this map!");
-                return;
+                getLogger().warning("Image file " + image + " not found, removing this map!");
+                continue;
             }
             
             map.addRenderer(new ImageMapRenderer(loadImage(image), x, y));
@@ -211,6 +211,9 @@ public class ImageMaps extends JavaPlugin implements Listener
         
         File f = new File(getDataFolder(), "images" + File.separatorChar + file);
         BufferedImage image = null;
+        
+        if (!f.exists())
+            return null;
         
         try
         {
@@ -229,6 +232,9 @@ public class ImageMaps extends JavaPlugin implements Listener
     {
         File file = new File(getDataFolder(), "maps.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        
+        for (String key : config.getKeys(false))
+            config.set(key, null);
         
         for (Entry<Short, ImageMap> e : maps.entrySet())
         {
