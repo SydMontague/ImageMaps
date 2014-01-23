@@ -39,7 +39,9 @@ public class ImageMapCommand implements TabExecutor
         if (args.length < 1)
             return false;
         
-        plugin.startPlacing((Player) sender, args[0]);
+        boolean fastsend = args.length >= 2 ? Boolean.parseBoolean(args[1]) : false;
+        
+        plugin.startPlacing((Player) sender, args[0], fastsend);
         
         sender.sendMessage("Started placing of " + args[0] + ". Rightclick on a block, that shall be the upper left conor.");
         

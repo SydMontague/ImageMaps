@@ -3,7 +3,9 @@ package de.craftlancer.imagemaps;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,9 +32,11 @@ import de.craftlancer.imagemaps.metrics.Metrics;
 
 public class ImageMaps extends JavaPlugin implements Listener
 {
-    private Map<String, String> placing = new HashMap<String, String>();
+    private Map<String, PlacingCacheEntry> placing = new HashMap<String, PlacingCacheEntry>();
     private Map<Short, ImageMap> maps = new HashMap<Short, ImageMap>();
     private Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
+    private List<Short> sendList = new ArrayList<Short>();
+    private FastSendTask sendTask;
     
     @Override
     public void onEnable()
@@ -40,9 +44,15 @@ public class ImageMaps extends JavaPlugin implements Listener
         if (!new File(getDataFolder(), "images").exists())
             new File(getDataFolder(), "images").mkdirs();
         
+        int sendPerTicks = getConfig().getInt("sendPerTicks", 20);
+        int mapsPerSend = getConfig().getInt("mapsPerSend", 8);
+        
         loadMaps();
         getCommand("imagemap").setExecutor(new ImageMapCommand(this));
         getServer().getPluginManager().registerEvents(this, this);
+        sendTask = new FastSendTask(this, mapsPerSend);
+        getServer().getPluginManager().registerEvents(sendTask, this);
+        sendTask.runTaskTimer(this, sendPerTicks, sendPerTicks);
         
         try
         {
@@ -59,14 +69,20 @@ public class ImageMaps extends JavaPlugin implements Listener
     public void onDisable()
     {
         saveMaps();
+        getServer().getScheduler().cancelTasks(this);
     }
     
-    public void startPlacing(Player p, String image)
+    public List<Short> getFastSendList()
     {
-        placing.put(p.getName(), image);
+        return sendList;
     }
     
-    public boolean placeImage(Block block, BlockFace face, String file)
+    public void startPlacing(Player p, String image, boolean fastsend)
+    {
+        placing.put(p.getName(), new PlacingCacheEntry(image, fastsend));
+    }
+    
+    public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache)
     {
         int xMod = 0;
         int zMod = 0;
@@ -90,7 +106,7 @@ public class ImageMaps extends JavaPlugin implements Listener
                 return false;
         }
         
-        BufferedImage image = loadImage(file);
+        BufferedImage image = loadImage(cache.getImage());
         
         if (image == null)
         {
@@ -113,7 +129,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
-                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * 128, y * 128, file);
+                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * 128, y * 128, cache);
         
         return true;
     }
@@ -136,17 +152,20 @@ public class ImageMaps extends JavaPlugin implements Listener
         placing.remove(e.getPlayer().getName());
     }
     
-    private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, String file)
+    private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache)
     {
         bb.setType(Material.AIR);
         ItemFrame i = bb.getWorld().spawn(bb.getRelative(face.getOppositeFace()).getLocation(), ItemFrame.class);
         i.teleport(bb.getLocation());
         i.setFacingDirection(face, true);
         
-        ItemStack item = getMapItem(file, x, y, image);
+        ItemStack item = getMapItem(cache.getImage(), x, y, image);
         i.setItem(item);
         
-        maps.put(item.getDurability(), new ImageMap(file, x, y));
+        if (cache.isFastSend() && !sendList.contains(item.getDurability()))
+            sendList.add(item.getDurability());
+        
+        maps.put(item.getDurability(), new ImageMap(cache.getImage(), x, y, cache.isFastSend()));
     }
     
     @SuppressWarnings("deprecation")
@@ -170,38 +189,6 @@ public class ImageMaps extends JavaPlugin implements Listener
         item.setDurability(map.getId());
         
         return item;
-    }
-    
-    @SuppressWarnings("deprecation")
-    public void loadMaps()
-    {
-        File file = new File(getDataFolder(), "maps.yml");
-        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-        
-        for (String key : config.getKeys(false))
-        {
-            short id = Short.parseShort(key);
-            
-            MapView map = getServer().getMap(id);
-            
-            for (MapRenderer r : map.getRenderers())
-                map.removeRenderer(r);
-            
-            String image = config.getString(key + ".image");
-            int x = config.getInt(key + ".x");
-            int y = config.getInt(key + ".y");
-            
-            BufferedImage bimage = loadImage(image);
-            
-            if (bimage == null)
-            {
-                getLogger().warning("Image file " + image + " not found, removing this map!");
-                continue;
-            }
-            
-            map.addRenderer(new ImageMapRenderer(loadImage(image), x, y));
-            maps.put(id, new ImageMap(image, x, y));
-        }
     }
     
     private BufferedImage loadImage(String file)
@@ -228,7 +215,43 @@ public class ImageMaps extends JavaPlugin implements Listener
         return image;
     }
     
-    public void saveMaps()
+    @SuppressWarnings("deprecation")
+    private void loadMaps()
+    {
+        File file = new File(getDataFolder(), "maps.yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        
+        for (String key : config.getKeys(false))
+        {
+            short id = Short.parseShort(key);
+            
+            MapView map = getServer().getMap(id);
+            
+            for (MapRenderer r : map.getRenderers())
+                map.removeRenderer(r);
+            
+            String image = config.getString(key + ".image");
+            int x = config.getInt(key + ".x");
+            int y = config.getInt(key + ".y");
+            boolean fastsend = config.getBoolean(key + ".fastsend", false);
+            
+            BufferedImage bimage = loadImage(image);
+            
+            if (bimage == null)
+            {
+                getLogger().warning("Image file " + image + " not found, removing this map!");
+                continue;
+            }
+            
+            if (fastsend)
+                sendList.add(id);
+            
+            map.addRenderer(new ImageMapRenderer(loadImage(image), x, y));
+            maps.put(id, new ImageMap(image, x, y, fastsend));
+        }
+    }
+    
+    private void saveMaps()
     {
         File file = new File(getDataFolder(), "maps.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -241,6 +264,7 @@ public class ImageMaps extends JavaPlugin implements Listener
             config.set(e.getKey() + ".image", e.getValue().getImage());
             config.set(e.getKey() + ".x", e.getValue().getX());
             config.set(e.getKey() + ".y", e.getValue().getY());
+            config.set(e.getKey() + ".fastsend", e.getValue().isFastSend());
         }
         
         try

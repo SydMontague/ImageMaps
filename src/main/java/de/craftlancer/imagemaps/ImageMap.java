@@ -5,12 +5,14 @@ public class ImageMap
     private String image;
     private int x;
     private int y;
+    private boolean fastsend;
     
-    public ImageMap(String image, int x, int y)
+    public ImageMap(String image, int x, int y, boolean fastsend)
     {
         this.image = image;
         this.x = x;
         this.y = y;
+        this.fastsend = fastsend;
     }
     
     public String getImage()
@@ -26,6 +28,11 @@ public class ImageMap
     public int getY()
     {
         return y;
+    }
+    
+    public boolean isFastSend()
+    {
+        return fastsend;
     }
     
     public boolean isSimilar(String file, int x2, int y2)
