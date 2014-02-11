@@ -27,8 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import de.craftlancer.imagemaps.metrics.Metrics;
+import org.mcstats.Metrics;
 
 public class ImageMaps extends JavaPlugin implements Listener
 {
