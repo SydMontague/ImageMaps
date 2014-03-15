@@ -121,10 +121,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
                 if (!block.getRelative(x * xMod, -y, x * zMod).getType().isSolid())
-                {
-                    getLogger().info("fail");
                     return false;
-                }
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
