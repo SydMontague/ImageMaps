@@ -147,8 +147,11 @@ public class ImageMaps extends JavaPlugin implements Listener
         
         if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getName())))
             e.getPlayer().sendMessage("Can't place the image here!");
+        else
+            saveMaps();
         
         placing.remove(e.getPlayer().getName());
+        
     }
     
     private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache)
