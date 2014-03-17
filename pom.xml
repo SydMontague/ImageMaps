@@ -9,6 +9,20 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+  
+  <distributionManagement>
+    <repository>
+      <name>Craftlancer Releases</name>
+      <id>releases</id>
+      <url>http://repo.craftlancer.de/content/repositories/releases</url>
+    </repository>
+    <snapshotRepository>
+      <name>Craftlancer Snapshots</name>
+      <id>snapshots</id>
+      <url>http://repo.craftlancer.de/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
+  
   <repositories>
     <repository>
       <id>bukkit-repo</id>
@@ -23,7 +37,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.7.2-R0.3</version>
+      <version>RELEASE</version>
     </dependency>
     <dependency>
       <groupId>org.mcstats.bukkit</groupId>
