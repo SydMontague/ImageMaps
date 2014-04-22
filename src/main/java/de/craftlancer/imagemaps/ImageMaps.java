@@ -29,6 +29,7 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
+// TODO change whole images to fastsend/slowsend
 public class ImageMaps extends JavaPlugin implements Listener
 {
     private Map<String, PlacingCacheEntry> placing = new HashMap<String, PlacingCacheEntry>();
@@ -164,7 +165,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         if (cache.isFastSend() && !sendList.contains(item.getDurability()))
             sendList.add(item.getDurability());
         
-        maps.put(item.getDurability(), new ImageMap(cache.getImage(), x, y, cache.isFastSend()));
+        maps.put(item.getDurability(), new ImageMap(cache.getImage(), x, y, sendList.contains(item.getDurability())));
     }
     
     @SuppressWarnings("deprecation")
