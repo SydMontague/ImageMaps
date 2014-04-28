@@ -39,6 +39,13 @@ public class ImageMapCommand implements TabExecutor
         if (args.length < 1)
             return false;
         
+        if(args.length >= 2 && args[1].equalsIgnoreCase("reload"))
+        {
+            plugin.reloadImage(args[0]);
+            sender.sendMessage("Image " + args[0] + " reloaded!");
+            return true;
+        }
+        
         boolean fastsend = args.length >= 2 ? Boolean.parseBoolean(args[1]) : false;
         
         plugin.startPlacing((Player) sender, args[0], fastsend);
@@ -51,10 +58,8 @@ public class ImageMapCommand implements TabExecutor
     /**
      * Get all values of a String array which start with a given String
      * 
-     * @param value
-     *            the given String
-     * @param list
-     *            the array
+     * @param value the given String
+     * @param list the array
      * @return a List of all matches
      */
     public static List<String> getMatches(String value, String[] list)

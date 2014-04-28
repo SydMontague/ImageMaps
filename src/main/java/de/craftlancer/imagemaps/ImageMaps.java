@@ -29,9 +29,11 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
-// TODO change whole images to fastsend/slowsend
 public class ImageMaps extends JavaPlugin implements Listener
 {
+    public static final int MAP_WIDTH = 128;
+    public static final int MAP_HEIGHT = 128;
+    
     private Map<String, PlacingCacheEntry> placing = new HashMap<String, PlacingCacheEntry>();
     private Map<Short, ImageMap> maps = new HashMap<Short, ImageMap>();
     private Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
@@ -116,8 +118,8 @@ public class ImageMaps extends JavaPlugin implements Listener
         
         Block b = block.getRelative(face);
         
-        int width = (int) Math.ceil((double) image.getWidth() / (double) 128);
-        int height = (int) Math.ceil((double) image.getHeight() / (double) 128);
+        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
+        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
@@ -126,7 +128,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++)
-                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * 128, y * 128, cache);
+                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * MAP_WIDTH, y * MAP_HEIGHT, cache);
         
         return true;
     }
@@ -162,10 +164,15 @@ public class ImageMaps extends JavaPlugin implements Listener
         ItemStack item = getMapItem(cache.getImage(), x, y, image);
         i.setItem(item);
         
-        if (cache.isFastSend() && !sendList.contains(item.getDurability()))
-            sendList.add(item.getDurability());
+        short id = item.getDurability();
         
-        maps.put(item.getDurability(), new ImageMap(cache.getImage(), x, y, sendList.contains(item.getDurability())));
+        if (cache.isFastSend() && !sendList.contains(id))
+        {
+            sendList.add(id);
+            sendTask.addToQueue(id);
+        }
+        
+        maps.put(id, new ImageMap(cache.getImage(), x, y, sendList.contains(id)));
     }
     
     @SuppressWarnings("deprecation")
@@ -276,5 +283,29 @@ public class ImageMaps extends JavaPlugin implements Listener
             getLogger().severe("Failed to save maps.yml!");
             e1.printStackTrace();
         }
+    }
+    
+    @SuppressWarnings("deprecation")
+    public void reloadImage(String file)
+    {
+        images.remove(file);
+        BufferedImage image = loadImage(file);
+        
+        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
+        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
+        
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+            {
+                short id = getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getDurability();
+                MapView map = getServer().getMap(id);
+                
+                for (MapRenderer renderer : map.getRenderers())
+                    if (renderer instanceof ImageMapRenderer)
+                        ((ImageMapRenderer) renderer).recalculateInput(image, x * MAP_WIDTH, y * MAP_HEIGHT);
+                
+                sendTask.addToQueue(id);
+            }
+        
     }
 }

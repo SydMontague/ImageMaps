@@ -1,7 +1,9 @@
 package de.craftlancer.imagemaps;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -14,7 +16,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 public class FastSendTask extends BukkitRunnable implements Listener
 {
-    private Map<UUID, Integer> status = new HashMap<UUID, Integer>();
+    private Map<UUID, Queue<Short>> status = new HashMap<UUID, Queue<Short>>();
     private final ImageMaps plugin;
     private final int mapsPerRun;
     
@@ -33,28 +35,17 @@ public class FastSendTask extends BukkitRunnable implements Listener
         
         for (Player p : plugin.getServer().getOnlinePlayers())
         {
-            int state = getStatus(p);
+            Queue<Short> state = getStatus(p);
             
-            if (state >= plugin.getFastSendList().size())
-                continue;
-            
-            int i = mapsPerRun;
-            
-            do
-            {
-                p.sendMap(plugin.getServer().getMap(plugin.getFastSendList().get(state)));
-                state++;
-            }
-            while (--i > 0 && state < plugin.getFastSendList().size());
-            
-            status.put(p.getUniqueId(), state);
+            for (int i = 0; i < mapsPerRun && !state.isEmpty(); i++)
+                p.sendMap(plugin.getServer().getMap(state.poll()));
         }
     }
     
-    private int getStatus(Player p)
+    private Queue<Short> getStatus(Player p)
     {
-        if(!status.containsKey(p.getUniqueId()))
-            status.put(p.getUniqueId(), 0);
+        if (!status.containsKey(p.getUniqueId()))
+            status.put(p.getUniqueId(), new LinkedList<Short>(plugin.getFastSendList()));
         
         return status.get(p.getUniqueId());
     }
@@ -62,7 +53,7 @@ public class FastSendTask extends BukkitRunnable implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent e)
     {
-        status.put(e.getPlayer().getUniqueId(), 0);
+        status.put(e.getPlayer().getUniqueId(), new LinkedList<Short>(plugin.getFastSendList()));
     }
     
     @EventHandler(priority = EventPriority.MONITOR)
@@ -70,4 +61,11 @@ public class FastSendTask extends BukkitRunnable implements Listener
     {
         status.remove(e.getPlayer().getUniqueId());
     }
+    
+    public void addToQueue(short mapId)
+    {
+        for(Queue<Short> queue : status.values())
+            queue.add(mapId);
+    }
+    
 }
