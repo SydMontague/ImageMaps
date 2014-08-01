@@ -50,7 +50,7 @@ public class ImageMapCommand implements TabExecutor
         
         plugin.startPlacing((Player) sender, args[0], fastsend);
         
-        sender.sendMessage("Started placing of " + args[0] + ". Rightclick on a block, that shall be the upper left conor.");
+        sender.sendMessage("Started placing of " + args[0] + ". Rightclick on a block, that shall be the upper left corner.");
         
         return true;
     }
