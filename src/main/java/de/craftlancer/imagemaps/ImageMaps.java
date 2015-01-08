@@ -156,10 +156,21 @@ public class ImageMaps extends JavaPlugin implements Listener
     
     private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache)
     {
-        bb.setType(Material.AIR);
-        ItemFrame i = bb.getWorld().spawn(bb.getRelative(face.getOppositeFace()).getLocation(), ItemFrame.class);
-        i.teleport(bb.getLocation());
-        i.setFacingDirection(face, true);
+        ItemFrame i;
+        String cbPackage = getServer().getClass().getPackage().getName();
+        String version = cbPackage.substring(cbPackage.lastIndexOf('.') + 1);
+        if (version.startsWith("v1_8"))
+        {
+            i = bb.getWorld().spawn(bb.getLocation(), ItemFrame.class);
+            i.setFacingDirection(face, false);
+        }
+        else
+        {
+            bb.setType(Material.AIR);
+            i = bb.getWorld().spawn(bb.getRelative(face.getOppositeFace()).getLocation(), ItemFrame.class);
+            i.teleport(bb.getLocation());
+            i.setFacingDirection(face, true);
+        }
         
         ItemStack item = getMapItem(cache.getImage(), x, y, image);
         i.setItem(item);
