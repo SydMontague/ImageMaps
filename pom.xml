@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.craftlancer.imagemaps</groupId>
   <artifactId>ImageMaps</artifactId>
-  <version>0.4.1</version>
+  <version>0.4.2</version>
   <name>ImageMaps</name>
   <description>Draw Images on maps!</description>
   <properties>
@@ -37,12 +37,12 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>RELEASE</version>
+      <version>1.9-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.mcstats.bukkit</groupId>
       <artifactId>metrics</artifactId>
-      <version>R7</version>
+      <version>R8-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

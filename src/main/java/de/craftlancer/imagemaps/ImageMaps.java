@@ -29,8 +29,7 @@ import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.mcstats.Metrics;
 
-public class ImageMaps extends JavaPlugin implements Listener
-{
+public class ImageMaps extends JavaPlugin implements Listener {
     public static final int MAP_WIDTH = 128;
     public static final int MAP_HEIGHT = 128;
     
@@ -41,8 +40,7 @@ public class ImageMaps extends JavaPlugin implements Listener
     private FastSendTask sendTask;
     
     @Override
-    public void onEnable()
-    {
+    public void onEnable() {
         if (!new File(getDataFolder(), "images").exists())
             new File(getDataFolder(), "images").mkdirs();
         
@@ -56,41 +54,34 @@ public class ImageMaps extends JavaPlugin implements Listener
         getServer().getPluginManager().registerEvents(sendTask, this);
         sendTask.runTaskTimer(this, sendPerTicks, sendPerTicks);
         
-        try
-        {
+        try {
             Metrics metrics = new Metrics(this);
             metrics.start();
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             getLogger().severe("Failed to load Metrics!");
         }
     }
     
     @Override
-    public void onDisable()
-    {
+    public void onDisable() {
         saveMaps();
         getServer().getScheduler().cancelTasks(this);
     }
     
-    public List<Short> getFastSendList()
-    {
+    public List<Short> getFastSendList() {
         return sendList;
     }
     
-    public void startPlacing(Player p, String image, boolean fastsend)
-    {
+    public void startPlacing(Player p, String image, boolean fastsend) {
         placing.put(p.getName(), new PlacingCacheEntry(image, fastsend));
     }
     
-    public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache)
-    {
+    public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache) {
         int xMod = 0;
         int zMod = 0;
         
-        switch (face)
-        {
+        switch (face) {
             case EAST:
                 zMod = -1;
                 break;
@@ -110,8 +101,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         
         BufferedImage image = loadImage(cache.getImage());
         
-        if (image == null)
-        {
+        if (image == null) {
             getLogger().severe("Someone tried to create an image with an invalid file!");
             return false;
         }
@@ -134,8 +124,7 @@ public class ImageMaps extends JavaPlugin implements Listener
     }
     
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onInteract(PlayerInteractEvent e)
-    {
+    public void onInteract(PlayerInteractEvent e) {
         if (!e.hasBlock())
             return;
         
@@ -154,31 +143,18 @@ public class ImageMaps extends JavaPlugin implements Listener
         
     }
     
-    private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache)
-    {
+    private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache) {
         ItemFrame i;
-        String cbPackage = getServer().getClass().getPackage().getName();
-        String version = cbPackage.substring(cbPackage.lastIndexOf('.') + 1);
-        if (version.startsWith("v1_8"))
-        {
-            i = bb.getWorld().spawn(bb.getLocation(), ItemFrame.class);
-            i.setFacingDirection(face, false);
-        }
-        else
-        {
-            bb.setType(Material.AIR);
-            i = bb.getWorld().spawn(bb.getRelative(face.getOppositeFace()).getLocation(), ItemFrame.class);
-            i.teleport(bb.getLocation());
-            i.setFacingDirection(face, true);
-        }
+        
+        i = bb.getWorld().spawn(bb.getLocation(), ItemFrame.class);
+        i.setFacingDirection(face, false);
         
         ItemStack item = getMapItem(cache.getImage(), x, y, image);
         i.setItem(item);
         
         short id = item.getDurability();
         
-        if (cache.isFastSend() && !sendList.contains(id))
-        {
+        if (cache.isFastSend() && !sendList.contains(id)) {
             sendList.add(id);
             sendTask.addToQueue(id);
         }
@@ -187,13 +163,11 @@ public class ImageMaps extends JavaPlugin implements Listener
     }
     
     @SuppressWarnings("deprecation")
-    private ItemStack getMapItem(String file, int x, int y, BufferedImage image)
-    {
+    private ItemStack getMapItem(String file, int x, int y, BufferedImage image) {
         ItemStack item = new ItemStack(Material.MAP);
         
         for (Entry<Short, ImageMap> entry : maps.entrySet())
-            if (entry.getValue().isSimilar(file, x, y))
-            {
+            if (entry.getValue().isSimilar(file, x, y)) {
                 item.setDurability(entry.getKey());
                 return item;
             }
@@ -209,8 +183,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         return item;
     }
     
-    private BufferedImage loadImage(String file)
-    {
+    private BufferedImage loadImage(String file) {
         if (images.containsKey(file))
             return images.get(file);
         
@@ -220,13 +193,11 @@ public class ImageMaps extends JavaPlugin implements Listener
         if (!f.exists())
             return null;
         
-        try
-        {
+        try {
             image = ImageIO.read(f);
             images.put(file, image);
         }
-        catch (IOException e)
-        {
+        catch (IOException e) {
             e.printStackTrace();
         }
         
@@ -234,13 +205,11 @@ public class ImageMaps extends JavaPlugin implements Listener
     }
     
     @SuppressWarnings("deprecation")
-    private void loadMaps()
-    {
+    private void loadMaps() {
         File file = new File(getDataFolder(), "maps.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         
-        for (String key : config.getKeys(false))
-        {
+        for (String key : config.getKeys(false)) {
             short id = Short.parseShort(key);
             
             MapView map = getServer().getMap(id);
@@ -255,8 +224,7 @@ public class ImageMaps extends JavaPlugin implements Listener
             
             BufferedImage bimage = loadImage(image);
             
-            if (bimage == null)
-            {
+            if (bimage == null) {
                 getLogger().warning("Image file " + image + " not found, removing this map!");
                 continue;
             }
@@ -269,36 +237,31 @@ public class ImageMaps extends JavaPlugin implements Listener
         }
     }
     
-    private void saveMaps()
-    {
+    private void saveMaps() {
         File file = new File(getDataFolder(), "maps.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         
         for (String key : config.getKeys(false))
             config.set(key, null);
         
-        for (Entry<Short, ImageMap> e : maps.entrySet())
-        {
+        for (Entry<Short, ImageMap> e : maps.entrySet()) {
             config.set(e.getKey() + ".image", e.getValue().getImage());
             config.set(e.getKey() + ".x", e.getValue().getX());
             config.set(e.getKey() + ".y", e.getValue().getY());
             config.set(e.getKey() + ".fastsend", e.getValue().isFastSend());
         }
         
-        try
-        {
+        try {
             config.save(file);
         }
-        catch (IOException e1)
-        {
+        catch (IOException e1) {
             getLogger().severe("Failed to save maps.yml!");
             e1.printStackTrace();
         }
     }
     
     @SuppressWarnings("deprecation")
-    public void reloadImage(String file)
-    {
+    public void reloadImage(String file) {
         images.remove(file);
         BufferedImage image = loadImage(file);
         
@@ -306,8 +269,7 @@ public class ImageMaps extends JavaPlugin implements Listener
         int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
         
         for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-            {
+            for (int y = 0; y < height; y++) {
                 short id = getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getDurability();
                 MapView map = getServer().getMap(id);
                 
