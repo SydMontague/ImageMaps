@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -112,13 +113,25 @@ public class ImageMaps extends JavaPlugin implements Listener {
         int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
         
         for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < height; y++) {
                 if (!block.getRelative(x * xMod, -y, x * zMod).getType().isSolid())
                     return false;
+                
+                if (block.getRelative(x * xMod - zMod, -y, x * zMod + xMod).getType().isSolid())
+                    return false;
+            }
         
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++)
-                setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * MAP_WIDTH, y * MAP_HEIGHT, cache);
+        try {
+            for (int x = 0; x < width; x++)
+                for (int y = 0; y < height; y++)
+                    setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * MAP_WIDTH, y * MAP_HEIGHT, cache);
+        }
+        catch (NullPointerException e) {
+            // God forgive me, but I actually HAVE to catch this...
+            getLogger().info("Some error occured while placing the ItemFrames. This can for example happen when some existing ItemFrame/Hanging Entity is blocking.");
+            getLogger().info("Unfortunatly this is caused be the way Minecraft/CraftBukkit handles the spawning of Entities.");
+            return false;
+        }
         
         return true;
     }
@@ -135,7 +148,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             return;
         
         if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getName())))
-            e.getPlayer().sendMessage("Can't place the image here!");
+            e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
         else
             saveMaps();
         
@@ -144,9 +157,10 @@ public class ImageMaps extends JavaPlugin implements Listener {
     }
     
     private void setItemFrame(Block bb, BufferedImage image, BlockFace face, int x, int y, PlacingCacheEntry cache) {
-        ItemFrame i;
+        ItemFrame i = null;
         
         i = bb.getWorld().spawn(bb.getLocation(), ItemFrame.class);
+        
         i.setFacingDirection(face, false);
         
         ItemStack item = getMapItem(cache.getImage(), x, y, image);
