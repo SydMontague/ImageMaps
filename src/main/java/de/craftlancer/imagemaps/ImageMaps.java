@@ -25,10 +25,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.Metrics;
 
 public class ImageMaps extends JavaPlugin implements Listener {
     public static final int MAP_WIDTH = 128;
@@ -54,14 +54,6 @@ public class ImageMaps extends JavaPlugin implements Listener {
         sendTask = new FastSendTask(this, mapsPerSend);
         getServer().getPluginManager().registerEvents(sendTask, this);
         sendTask.runTaskTimer(this, sendPerTicks, sendPerTicks);
-        
-        try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-        }
-        catch (IOException e) {
-            getLogger().severe("Failed to load Metrics!");
-        }
     }
     
     @Override
@@ -180,19 +172,22 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private ItemStack getMapItem(String file, int x, int y, BufferedImage image) {
         ItemStack item = new ItemStack(Material.MAP);
         
-        for (Entry<Short, ImageMap> entry : maps.entrySet())
+        for (Entry<Short, ImageMap> entry : maps.entrySet()) {
             if (entry.getValue().isSimilar(file, x, y)) {
-                item.setDurability(entry.getKey());
+                MapMeta meta = (MapMeta) item.getItemMeta();
+                meta.setMapId(entry.getKey());
+                item.setItemMeta(meta);
                 return item;
             }
+        }
         
         MapView map = getServer().createMap(getServer().getWorlds().get(0));
         for (MapRenderer r : map.getRenderers())
             map.removeRenderer(r);
         
         map.addRenderer(new ImageMapRenderer(image, x, y));
-        
-        item.setDurability(map.getId());
+
+        ((MapMeta) item.getItemMeta()).setMapId(map.getId());
         
         return item;
     }
