@@ -34,10 +34,10 @@ public class ImageMaps extends JavaPlugin implements Listener {
     public static final int MAP_WIDTH = 128;
     public static final int MAP_HEIGHT = 128;
     
-    private Map<String, PlacingCacheEntry> placing = new HashMap<String, PlacingCacheEntry>();
-    private Map<Short, ImageMap> maps = new HashMap<Short, ImageMap>();
-    private Map<String, BufferedImage> images = new HashMap<String, BufferedImage>();
-    private List<Short> sendList = new ArrayList<Short>();
+    private Map<String, PlacingCacheEntry> placing = new HashMap<>();
+    private Map<Short, ImageMap> maps = new HashMap<>();
+    private Map<String, BufferedImage> images = new HashMap<>();
+    private List<Short> sendList = new ArrayList<>();
     private FastSendTask sendTask;
     
     @Override
@@ -158,7 +158,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         ItemStack item = getMapItem(cache.getImage(), x, y, image);
         i.setItem(item);
         
-        short id = item.getDurability();
+        short id = (short) ((MapMeta) item.getItemMeta()).getMapId();
         
         if (cache.isFastSend() && !sendList.contains(id)) {
             sendList.add(id);
@@ -187,7 +187,9 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         map.addRenderer(new ImageMapRenderer(image, x, y));
 
-        ((MapMeta) item.getItemMeta()).setMapId(map.getId());
+        MapMeta meta = ((MapMeta) item.getItemMeta());
+        meta.setMapId(map.getId());
+        item.setItemMeta(meta);
         
         return item;
     }
@@ -222,6 +224,9 @@ public class ImageMaps extends JavaPlugin implements Listener {
             short id = Short.parseShort(key);
             
             MapView map = getServer().getMap(id);
+            
+            if(map == null)
+                continue;
             
             for (MapRenderer r : map.getRenderers())
                 map.removeRenderer(r);
@@ -279,7 +284,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++) {
-                short id = getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getDurability();
+                short id = (short) ((MapMeta) getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getItemMeta()).getMapId();
                 MapView map = getServer().getMap(id);
                 
                 for (MapRenderer renderer : map.getRenderers())
