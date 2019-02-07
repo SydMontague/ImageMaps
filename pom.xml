@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.craftlancer.imagemaps</groupId>
   <artifactId>ImageMaps</artifactId>
-  <version>0.4.5</version>
+  <version>0.4.6-SNAPSHOT</version>
   <name>ImageMaps</name>
   <description>Draw Images on maps!</description>
   <properties>
@@ -21,7 +21,7 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.13-R0.1-SNAPSHOT</version>
+      <version>1.13.2-R0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
   
@@ -44,34 +44,6 @@
         </configuration>
       </plugin>
       
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-shade-plugin</artifactId>
-        <version>1.4</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-
-            <configuration>
-              <relocations>
-                <relocation>
-                  <pattern>org.mcstats</pattern>
-                  <shadedPattern>de.craftlancer.imagemaps.metrics</shadedPattern>
-                </relocation>
-              </relocations>
-
-              <artifactSet>
-                <includes>
-                  <include>org.mcstats.bukkit:*</include>
-                </includes>
-              </artifactSet>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>

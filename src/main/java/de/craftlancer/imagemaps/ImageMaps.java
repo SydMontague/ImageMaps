@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
@@ -34,16 +35,18 @@ public class ImageMaps extends JavaPlugin implements Listener {
     public static final int MAP_WIDTH = 128;
     public static final int MAP_HEIGHT = 128;
     
+    private static final String IMAGES_DIR = "images";
+    
     private Map<String, PlacingCacheEntry> placing = new HashMap<>();
-    private Map<Short, ImageMap> maps = new HashMap<>();
+    private Map<Integer, ImageMap> maps = new HashMap<>();
     private Map<String, BufferedImage> images = new HashMap<>();
-    private List<Short> sendList = new ArrayList<>();
+    private List<Integer> sendList = new ArrayList<>();
     private FastSendTask sendTask;
     
     @Override
     public void onEnable() {
-        if (!new File(getDataFolder(), "images").exists())
-            new File(getDataFolder(), "images").mkdirs();
+        if (!new File(getDataFolder(), IMAGES_DIR).exists())
+            new File(getDataFolder(), IMAGES_DIR).mkdirs();
         
         int sendPerTicks = getConfig().getInt("sendPerTicks", 20);
         int mapsPerSend = getConfig().getInt("mapsPerSend", 8);
@@ -62,7 +65,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         getServer().getScheduler().cancelTasks(this);
     }
     
-    public List<Short> getFastSendList() {
+    public List<Integer> getFastSendList() {
         return sendList;
     }
     
@@ -118,7 +121,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
                 for (int y = 0; y < height; y++)
                     setItemFrame(b.getRelative(x * xMod, -y, x * zMod), image, face, x * MAP_WIDTH, y * MAP_HEIGHT, cache);
         }
-        catch (NullPointerException e) {
+        catch (IllegalArgumentException e) {
             // God forgive me, but I actually HAVE to catch this...
             getLogger().info("Some error occured while placing the ItemFrames. This can for example happen when some existing ItemFrame/Hanging Entity is blocking.");
             getLogger().info("Unfortunatly this is caused be the way Minecraft/CraftBukkit handles the spawning of Entities.");
@@ -158,7 +161,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         ItemStack item = getMapItem(cache.getImage(), x, y, image);
         i.setItem(item);
         
-        short id = (short) ((MapMeta) item.getItemMeta()).getMapId();
+        int id = ((MapMeta) item.getItemMeta()).getMapId();
         
         if (cache.isFastSend() && !sendList.contains(id)) {
             sendList.add(id);
@@ -172,7 +175,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private ItemStack getMapItem(String file, int x, int y, BufferedImage image) {
         ItemStack item = new ItemStack(Material.MAP);
         
-        for (Entry<Short, ImageMap> entry : maps.entrySet()) {
+        for (Entry<Integer, ImageMap> entry : maps.entrySet()) {
             if (entry.getValue().isSimilar(file, x, y)) {
                 MapMeta meta = (MapMeta) item.getItemMeta();
                 meta.setMapId(entry.getKey());
@@ -198,7 +201,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         if (images.containsKey(file))
             return images.get(file);
         
-        File f = new File(getDataFolder(), "images" + File.separatorChar + file);
+        File f = new File(getDataFolder(), IMAGES_DIR + File.separatorChar + file);
         BufferedImage image = null;
         
         if (!f.exists())
@@ -209,7 +212,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             images.put(file, image);
         }
         catch (IOException e) {
-            e.printStackTrace();
+            getLogger().log(Level.SEVERE, "Error while trying to read image " + f.getName(), e);
         }
         
         return image;
@@ -221,7 +224,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
         
         for (String key : config.getKeys(false)) {
-            short id = Short.parseShort(key);
+            int id = Integer.parseInt(key);
             
             MapView map = getServer().getMap(id);
             
@@ -239,7 +242,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             BufferedImage bimage = loadImage(image);
             
             if (bimage == null) {
-                getLogger().warning("Image file " + image + " not found, removing this map!");
+                getLogger().warning(() -> "Image file " + image + " not found, removing this map!");
                 continue;
             }
             
@@ -258,7 +261,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         for (String key : config.getKeys(false))
             config.set(key, null);
         
-        for (Entry<Short, ImageMap> e : maps.entrySet()) {
+        for (Entry<Integer, ImageMap> e : maps.entrySet()) {
             config.set(e.getKey() + ".image", e.getValue().getImage());
             config.set(e.getKey() + ".x", e.getValue().getX());
             config.set(e.getKey() + ".y", e.getValue().getY());
@@ -269,8 +272,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             config.save(file);
         }
         catch (IOException e1) {
-            getLogger().severe("Failed to save maps.yml!");
-            e1.printStackTrace();
+            getLogger().log(Level.SEVERE, "Failed to save maps.yml!", e1);
         }
     }
     
@@ -279,12 +281,17 @@ public class ImageMaps extends JavaPlugin implements Listener {
         images.remove(file);
         BufferedImage image = loadImage(file);
         
+        if(image == null) {
+            getLogger().warning(() -> "Failed to reload image: " + file);
+            return;
+        }
+        
         int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
         int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++) {
-                short id = (short) ((MapMeta) getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getItemMeta()).getMapId();
+                int id = (short) ((MapMeta) getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getItemMeta()).getMapId();
                 MapView map = getServer().getMap(id);
                 
                 for (MapRenderer renderer : map.getRenderers())

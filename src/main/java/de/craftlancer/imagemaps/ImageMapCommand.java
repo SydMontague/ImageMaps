@@ -1,6 +1,8 @@
 package de.craftlancer.imagemaps;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,8 +27,10 @@ public class ImageMapCommand implements TabExecutor
         {
             case 1:
                 return getMatches(args[0], new File(plugin.getDataFolder(), "images").list());
+            case 2:
+                return Arrays.asList("true", "false", "reload");
             default:
-                return null;
+                return Collections.emptyList();
         }
     }
     
@@ -46,7 +50,7 @@ public class ImageMapCommand implements TabExecutor
             return true;
         }
         
-        boolean fastsend = args.length >= 2 ? Boolean.parseBoolean(args[1]) : false;
+        boolean fastsend = args.length >= 2 && Boolean.parseBoolean(args[1]);
         
         plugin.startPlacing((Player) sender, args[0], fastsend);
         
@@ -64,7 +68,7 @@ public class ImageMapCommand implements TabExecutor
      */
     public static List<String> getMatches(String value, String[] list)
     {
-        List<String> result = new LinkedList<String>();
+        List<String> result = new LinkedList<>();
         
         for (String str : list)
             if (str.startsWith(value))
