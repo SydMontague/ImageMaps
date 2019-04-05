@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -222,6 +224,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private void loadMaps() {
         File file = new File(getDataFolder(), "maps.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        Set<String> warnedFilenames=new HashSet<>();
         
         for (String key : config.getKeys(false)) {
             int id = Integer.parseInt(key);
@@ -242,7 +245,10 @@ public class ImageMaps extends JavaPlugin implements Listener {
             BufferedImage bimage = loadImage(image);
             
             if (bimage == null) {
-                getLogger().warning(() -> "Image file " + image + " not found, removing this map!");
+                if (!warnedFilenames.contains(image)) {
+                    warnedFilenames.add(image);
+                    getLogger().warning(() -> "Image file " + image + " not found, removing this map!");
+                }
                 continue;
             }
             
