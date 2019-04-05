@@ -71,8 +71,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return sendList;
     }
     
-    public void startPlacing(Player p, String image, boolean fastsend) {
-        placing.put(p.getName(), new PlacingCacheEntry(image, fastsend));
+    public void startPlacing(Player p, String image, boolean fastsend, double scale) {
+        placing.put(p.getName(), new PlacingCacheEntry(image, fastsend, scale));
     }
     
     public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache) {
@@ -106,8 +106,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         Block b = block.getRelative(face);
         
-        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
-        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
+        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH * cache.getScale() - 0.0001);
+        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT  * cache.getScale() - 0.0001);
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++) {
@@ -160,7 +160,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         i.setFacingDirection(face, false);
         
-        ItemStack item = getMapItem(cache.getImage(), x, y, image);
+        ItemStack item = getMapItem(cache.getImage(), x, y, image, cache.getScale());
         i.setItem(item);
         
         int id = ((MapMeta) item.getItemMeta()).getMapId();
@@ -170,27 +170,27 @@ public class ImageMaps extends JavaPlugin implements Listener {
             sendTask.addToQueue(id);
         }
         
-        maps.put(id, new ImageMap(cache.getImage(), x, y, sendList.contains(id)));
+        maps.put(id, new ImageMap(cache.getImage(), x, y, sendList.contains(id), cache.getScale()));
     }
     
     @SuppressWarnings("deprecation")
-    private ItemStack getMapItem(String file, int x, int y, BufferedImage image) {
+    private ItemStack getMapItem(String file, int x, int y, BufferedImage image, double scale) {
         ItemStack item = new ItemStack(Material.MAP);
         
         for (Entry<Integer, ImageMap> entry : maps.entrySet()) {
-            if (entry.getValue().isSimilar(file, x, y)) {
+            if (entry.getValue().isSimilar(file, x, y, scale)) {
                 MapMeta meta = (MapMeta) item.getItemMeta();
                 meta.setMapId(entry.getKey());
                 item.setItemMeta(meta);
                 return item;
             }
         }
-        
+
         MapView map = getServer().createMap(getServer().getWorlds().get(0));
         for (MapRenderer r : map.getRenderers())
             map.removeRenderer(r);
         
-        map.addRenderer(new ImageMapRenderer(image, x, y));
+        map.addRenderer(new ImageMapRenderer(image, x, y, scale));
 
         MapMeta meta = ((MapMeta) item.getItemMeta());
         meta.setMapId(map.getId());
@@ -241,6 +241,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             int x = config.getInt(key + ".x");
             int y = config.getInt(key + ".y");
             boolean fastsend = config.getBoolean(key + ".fastsend", false);
+            double scale = config.getDouble(key + ".scale", 1.0);
             
             BufferedImage bimage = loadImage(image);
             
@@ -255,8 +256,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
             if (fastsend)
                 sendList.add(id);
             
-            map.addRenderer(new ImageMapRenderer(loadImage(image), x, y));
-            maps.put(id, new ImageMap(image, x, y, fastsend));
+            map.addRenderer(new ImageMapRenderer(loadImage(image), x, y, scale));
+            maps.put(id, new ImageMap(image, x, y, fastsend, scale));
         }
     }
     
@@ -272,6 +273,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             config.set(e.getKey() + ".x", e.getValue().getX());
             config.set(e.getKey() + ".y", e.getValue().getY());
             config.set(e.getKey() + ".fastsend", e.getValue().isFastSend());
+            config.set(e.getKey() + ".scale", e.getValue().getScale());
         }
         
         try {
@@ -295,17 +297,16 @@ public class ImageMaps extends JavaPlugin implements Listener {
         int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
         int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
         
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++) {
-                int id = (short) ((MapMeta) getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getItemMeta()).getMapId();
+        for (Entry<Integer, ImageMap> entry : maps.entrySet()) {
+            ImageMap imageMap = entry.getValue();
+            if (imageMap.getImage().equals(file)) {
+                int id=((MapMeta) getMapItem(file, imageMap.getX(), imageMap.getY(), image, imageMap.getScale()).getItemMeta()).getMapId();
                 MapView map = getServer().getMap(id);
-                
                 for (MapRenderer renderer : map.getRenderers())
                     if (renderer instanceof ImageMapRenderer)
-                        ((ImageMapRenderer) renderer).recalculateInput(image, x * MAP_WIDTH, y * MAP_HEIGHT);
-                
+                        ((ImageMapRenderer) renderer).recalculateInput(image, imageMap.getX(), imageMap.getY(), imageMap.getScale());
                 sendTask.addToQueue(id);
             }
-        
+        }
     }
 }

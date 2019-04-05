@@ -1,5 +1,6 @@
 package de.craftlancer.imagemaps;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,16 +29,24 @@ public class ImageMapCommand implements TabExecutor
             case 1:
                 return getMatches(args[0], new File(plugin.getDataFolder(), "images").list());
             case 2:
-                return Arrays.asList("true", "false", "reload");
-            default:
-                return Collections.emptyList();
+                return Arrays.asList("true", "false", "reload", "download", "scale", "info");
+            case 3:
+                if (args[2].equals("true") || args[2].equals("false"))
+                    return Arrays.asList("scale");
+                break;
+            case 5:
+                if (args[2].equals("scale")) {
+                    return Arrays.asList("true", "false");
+                }
+                break;
         }
+        return Collections.emptyList();
     }
     
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
     {
-        if (!sender.hasPermission("imagemaps.use") || !(sender instanceof Player))
+        if (!sender.hasPermission("imagemaps.use"))
             return true;
         
         if (args.length < 1)
@@ -50,11 +59,74 @@ public class ImageMapCommand implements TabExecutor
             return true;
         }
         
-        boolean fastsend = args.length >= 2 && Boolean.parseBoolean(args[1]);
+        if (args.length>=2 && args[1].equals("info")) {
+            BufferedImage image=plugin.loadImage(args[0]);
+            if (image == null) {
+                sender.sendMessage("Error getting this image, please consult server logs");
+                return true;
+            }
+            int tileWidth=image.getWidth()+127/128;
+            int tileHeight=image.getHeight()+127/128;
+            
+            sender.sendMessage("This image is "+tileWidth+" tiles ("+image.getWidth()+" pixels) wide and "+tileHeight+" tiles ("+image.getHeight()+" pixels) high");
+            return true;
+        }
+
+        if (!(sender instanceof Player)) {
+            sender.sendMessage("You need to be a player to do that");
+            return true;
+        }
         
-        plugin.startPlacing((Player) sender, args[0], fastsend);
+        BufferedImage image=plugin.loadImage(args[0]);
+        if (image == null) {
+            sender.sendMessage("Error getting this image, please consult server logs");
+            return true;
+        }
+        boolean fastsend = false;
+        int tilesx = 0, tilesy = 0;
+
+        for (int i=1; i<args.length; i++) {
+            if (args[i].equalsIgnoreCase("true")) {
+                fastsend=true;
+            } else if (args[i].equalsIgnoreCase("false")) {
+                fastsend=false;
+            } else if (args[i].equalsIgnoreCase("scale") && i+2<args.length) {
+                try {
+                    tilesx=Integer.parseInt(args[i+1]);
+                    tilesy=Integer.parseInt(args[i+2]);
+                } catch (NumberFormatException ex) {
+                    tilesx = tilesy = 0;
+                }
+                if (tilesx < 0 || tilesy < 0) {
+                    sender.sendMessage("Need to pass two integers to scale");
+                    return true;
+                }
+                i+=2;
+            } else {
+                sender.sendMessage("ignoring unknown parameter "+args[i]+" (continuing)");
+            }
+        }
         
-        sender.sendMessage("Started placing of " + args[0] + ". Rightclick on a block, that shall be the upper left corner.");
+        double scalex=tilesx * 128.0 / image.getWidth();
+        double scaley=tilesy * 128.0 / image.getHeight();
+        
+        if (scalex == 0 && scaley == 0) {
+            scalex = scaley = 1.0;
+        } else if (scalex == 0) {
+            scalex = scaley;
+        } else if (scaley == 0) {
+            scaley = scalex;
+        } else {
+            if (scalex > scaley) {
+                scalex = scaley;
+            } else {
+                scaley = scalex;
+            }
+        }
+
+        plugin.startPlacing((Player) sender, args[0], fastsend, scalex);
+        
+        sender.sendMessage("Started placing of " + args[0] + " which needs "+image.getWidth()*scalex+" width and "+image.getHeight()*scaley+" height. Rightclick on a block, that shall be the upper left corner.");
         
         return true;
     }

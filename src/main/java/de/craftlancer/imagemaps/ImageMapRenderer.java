@@ -1,6 +1,8 @@
 package de.craftlancer.imagemaps;
 
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 
 import org.bukkit.entity.Player;
@@ -10,30 +12,36 @@ import org.bukkit.map.MapView;
 
 public class ImageMapRenderer extends MapRenderer
 {
-    private Image image = null;
+    private BufferedImage image = null;
     private boolean first = true;
     
-    public ImageMapRenderer(BufferedImage image, int x1, int y1)
+    public ImageMapRenderer(BufferedImage image, int x1, int y1, double scale)
     {
-        recalculateInput(image, x1, y1);
+        recalculateInput(image, x1, y1, scale);
     }
     
-    public void recalculateInput(BufferedImage input, int x1, int y1)
+    public void recalculateInput(BufferedImage input, int x1, int y1, double scale)
     {
         int x2 = ImageMaps.MAP_WIDTH;
         int y2 = ImageMaps.MAP_HEIGHT;
         
-        if (x1 > input.getWidth() || y1 > input.getHeight())
+        if (x1 > input.getWidth()* scale + 0.001 || y1 > input.getHeight() * scale + 0.001)
             return;
         
-        if (x1 + x2 >= input.getWidth())
-            x2 = input.getWidth() - x1;
+        if (x1 + x2 >= input.getWidth() * scale)
+            x2 = (int)(input.getWidth() * scale) - x1;
         
-        if (y1 + y2 >= input.getHeight())
-            y2 = input.getHeight() - y1;
-        
-        this.image = input.getSubimage(x1, y1, x2, y2);
-        
+        if (y1 + y2 >= input.getHeight() * scale)
+            y2 = (int)(input.getHeight() * scale) - y1;
+
+        this.image = input.getSubimage((int)(x1/scale), (int)(y1/scale), (int)(x2/scale), (int)(y2/scale));
+        if (scale != 1.0) {
+            BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT, input.getType());
+            AffineTransform at = new AffineTransform();
+            at.scale(scale, scale);
+            AffineTransformOp scaleOp =  new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+            this.image = scaleOp.filter(this.image, resized);
+        }
         first = true;
     }
     
@@ -46,5 +54,4 @@ public class ImageMapRenderer extends MapRenderer
             first = false;
         }
     }
-    
 }
