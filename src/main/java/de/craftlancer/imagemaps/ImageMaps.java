@@ -148,7 +148,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
         else
             saveMaps();
-        
+        e.setCancelled(true);
         placing.remove(e.getPlayer().getName());
         
     }
@@ -199,7 +199,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return item;
     }
     
-    private BufferedImage loadImage(String file) {
+    public BufferedImage loadImage(String file) {
         if (images.containsKey(file))
             return images.get(file);
         
