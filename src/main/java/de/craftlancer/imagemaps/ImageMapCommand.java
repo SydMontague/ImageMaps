@@ -51,7 +51,17 @@ public class ImageMapCommand implements TabExecutor
         
         if (args.length < 1)
             return false;
-        
+
+        String filename=args[0];
+        for (int i=0; i<filename.length(); i++) {
+            if (filename.charAt(i) == '/'
+            ||  filename.charAt(i) == '\\'
+            ||  filename.charAt(i) == ':') {
+                sender.sendMessage("Sorry, this filename isn't allowed");
+                return true;
+            }
+        }        
+
         if(args.length >= 2 && args[1].equalsIgnoreCase("reload"))
         {
             plugin.reloadImage(args[0]);
@@ -65,10 +75,19 @@ public class ImageMapCommand implements TabExecutor
                 sender.sendMessage("Error getting this image, please consult server logs");
                 return true;
             }
-            int tileWidth=image.getWidth()+127/128;
-            int tileHeight=image.getHeight()+127/128;
-            
+            int tileWidth=(image.getWidth()+ImageMaps.MAP_WIDTH-1)/ImageMaps.MAP_WIDTH;
+            int tileHeight=(image.getHeight()+ImageMaps.MAP_HEIGHT-1)/ImageMaps.MAP_HEIGHT;
+
             sender.sendMessage("This image is "+tileWidth+" tiles ("+image.getWidth()+" pixels) wide and "+tileHeight+" tiles ("+image.getHeight()+" pixels) high");
+            return true;
+        }
+        
+        if (args.length >= 2 && args[1].equals("download")) {
+            if (sender.hasPermission("imagemaps.download")) {
+                plugin.appendDownloadTask(new ImageDownloadTask(plugin, args[2], args[0], sender));
+            } else {
+                sender.sendMessage("You don't have download permission");
+            }
             return true;
         }
 
@@ -125,8 +144,9 @@ public class ImageMapCommand implements TabExecutor
         }
 
         plugin.startPlacing((Player) sender, args[0], fastsend, scalex);
-        
-        sender.sendMessage("Started placing of " + args[0] + " which needs "+image.getWidth()*scalex+" width and "+image.getHeight()*scaley+" height. Rightclick on a block, that shall be the upper left corner.");
+        int tileWidth=(int)((image.getWidth()*scalex+0.001)+ImageMaps.MAP_WIDTH-1)/ImageMaps.MAP_WIDTH;
+        int tileHeight=(int)((image.getHeight()*scaley+0.001)+ImageMaps.MAP_HEIGHT-1)/ImageMaps.MAP_HEIGHT;
+        sender.sendMessage("Started placing of " + args[0] + " which needs "+image.getWidth()*scalex/ImageMaps.MAP_WIDTH+" width and "+image.getHeight()*scaley/ImageMaps.MAP_HEIGHT+" height. Rightclick on a block, that shall be the upper left corner.");
         
         return true;
     }

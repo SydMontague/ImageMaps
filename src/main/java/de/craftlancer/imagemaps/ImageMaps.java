@@ -44,6 +44,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private Map<String, BufferedImage> images = new HashMap<>();
     private List<Integer> sendList = new ArrayList<>();
     private FastSendTask sendTask;
+    private List<ImageDownloadTask> downloadTasks;
     
     @Override
     public void onEnable() {
@@ -59,6 +60,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         sendTask = new FastSendTask(this, mapsPerSend);
         getServer().getPluginManager().registerEvents(sendTask, this);
         sendTask.runTaskTimer(this, sendPerTicks, sendPerTicks);
+        downloadTasks=new ArrayList<>();
+        new ImageDownloadCompleteNotifier(this).runTaskTimer(this, 20, 20);
     }
     
     @Override
@@ -135,14 +138,17 @@ public class ImageMaps extends JavaPlugin implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent e) {
-        if (!e.hasBlock())
-            return;
-        
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
         
         if (!placing.containsKey(e.getPlayer().getName()))
             return;
+
+        if (!e.hasBlock()) {
+            e.getPlayer().sendMessage("Placing cancelled");
+            placing.remove(e.getPlayer().getName());
+            return;
+        }
         
         if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getName())))
             e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
@@ -308,5 +314,13 @@ public class ImageMaps extends JavaPlugin implements Listener {
                 sendTask.addToQueue(id);
             }
         }
+    }
+    
+    public void appendDownloadTask(ImageDownloadTask task) {
+        this.downloadTasks.add(task);
+    }
+    
+    public List<ImageDownloadTask> getDownloadTasks() {
+        return this.downloadTasks;
     }
 }
