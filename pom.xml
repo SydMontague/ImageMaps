@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.craftlancer.imagemaps</groupId>
   <artifactId>ImageMaps</artifactId>
-  <version>0.4.6-SNAPSHOT</version>
+  <version>0.5.0-SNAPSHOT</version>
   <name>ImageMaps</name>
   <description>Draw Images on maps!</description>
   <properties>

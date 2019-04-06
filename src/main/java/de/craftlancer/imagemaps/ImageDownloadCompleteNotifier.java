@@ -5,34 +5,33 @@
  */
 package de.craftlancer.imagemaps;
 
+import java.util.Iterator;
 import java.util.List;
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
  *
  * @author gbl
  */
-public class ImageDownloadCompleteNotifier extends BukkitRunnable implements Listener {
+public class ImageDownloadCompleteNotifier extends BukkitRunnable {
 
     private ImageMaps plugin;
     
     public ImageDownloadCompleteNotifier(ImageMaps plugin) {
-        this.plugin=plugin;
+        this.plugin = plugin;
     }
     
     @Override
     public void run() {
         List<ImageDownloadTask> tasks = plugin.getDownloadTasks();
-        for (ImageDownloadTask task: tasks) {
-            if (task.isDone()) {
-                tasks.remove(task);
-                try {
-                    task.getSender().sendMessage("Download "+task.getURL()+": "+task.getResult());
-                } catch (Exception e) {
-                    // ignore it, the sender might have logged out
-                }
-                return; // one message per tick, and no ConcurrentModificationExceptions
+        
+        Iterator<ImageDownloadTask> itr = tasks.iterator();
+        while(itr.hasNext()) {
+            ImageDownloadTask task = itr.next();
+            
+            if(task.isDone()) {
+                itr.remove();
+                task.getSender().sendMessage("Download " + task.getURL() + ": " + task.getResult());
             }
         }
     }

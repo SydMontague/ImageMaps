@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -39,7 +40,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     
     private static final String IMAGES_DIR = "images";
     
-    private Map<String, PlacingCacheEntry> placing = new HashMap<>();
+    private Map<UUID, PlacingCacheEntry> placing = new HashMap<>();
     private Map<Integer, ImageMap> maps = new HashMap<>();
     private Map<String, BufferedImage> images = new HashMap<>();
     private List<Integer> sendList = new ArrayList<>();
@@ -75,7 +76,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     }
     
     public void startPlacing(Player p, String image, boolean fastsend, double scale) {
-        placing.put(p.getName(), new PlacingCacheEntry(image, fastsend, scale));
+        placing.put(p.getUniqueId(), new PlacingCacheEntry(image, fastsend, scale));
     }
     
     public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache) {
@@ -138,24 +139,25 @@ public class ImageMaps extends JavaPlugin implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
+        if (!placing.containsKey(e.getPlayer().getUniqueId()))
             return;
         
-        if (!placing.containsKey(e.getPlayer().getName()))
-            return;
-
-        if (!e.hasBlock()) {
+        if (e.getAction() == Action.RIGHT_CLICK_AIR) {
             e.getPlayer().sendMessage("Placing cancelled");
-            placing.remove(e.getPlayer().getName());
+            placing.remove(e.getPlayer().getUniqueId());
             return;
         }
         
-        if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getName())))
+        if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
+            return;
+        
+        if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getUniqueId())))
             e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
         else
             saveMaps();
+        
         e.setCancelled(true);
-        placing.remove(e.getPlayer().getName());
+        placing.remove(e.getPlayer().getUniqueId());
         
     }
     
@@ -300,20 +302,16 @@ public class ImageMaps extends JavaPlugin implements Listener {
             return;
         }
         
-        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
-        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
-        
-        for (Entry<Integer, ImageMap> entry : maps.entrySet()) {
-            ImageMap imageMap = entry.getValue();
-            if (imageMap.getImage().equals(file)) {
-                int id=((MapMeta) getMapItem(file, imageMap.getX(), imageMap.getY(), image, imageMap.getScale()).getItemMeta()).getMapId();
-                MapView map = getServer().getMap(id);
-                for (MapRenderer renderer : map.getRenderers())
-                    if (renderer instanceof ImageMapRenderer)
-                        ((ImageMapRenderer) renderer).recalculateInput(image, imageMap.getX(), imageMap.getY(), imageMap.getScale());
-                sendTask.addToQueue(id);
-            }
-        }
+        maps.values().stream().filter(a -> a.getImage().equals(file)).forEach(imageMap -> {
+            int id = ((MapMeta) getMapItem(file, imageMap.getX(), imageMap.getY(), image, imageMap.getScale()).getItemMeta()).getMapId();
+            MapView map = getServer().getMap(id);
+            
+            for (MapRenderer renderer : map.getRenderers())
+                if (renderer instanceof ImageMapRenderer)
+                    ((ImageMapRenderer) renderer).recalculateInput(image, imageMap.getX(), imageMap.getY(), imageMap.getScale());
+            
+            sendTask.addToQueue(id);
+        });
     }
     
     public void appendDownloadTask(ImageDownloadTask task) {

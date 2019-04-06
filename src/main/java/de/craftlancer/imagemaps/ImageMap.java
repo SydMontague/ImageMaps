@@ -51,7 +51,7 @@ public class ImageMap
         if (getY() != y2)
             return false;
         
-        double diff=d - getScale();
+        double diff = d - getScale();
         return (diff > -0.0001 && diff < 0.0001);
     }
 }
