@@ -6,13 +6,15 @@ public class ImageMap
     private int x;
     private int y;
     private boolean fastsend;
+    private double scale;
     
-    public ImageMap(String image, int x, int y, boolean fastsend)
+    public ImageMap(String image, int x, int y, boolean fastsend, double scale)
     {
         this.image = image;
         this.x = x;
         this.y = y;
         this.fastsend = fastsend;
+        this.scale = scale;
     }
     
     public String getImage()
@@ -35,7 +37,12 @@ public class ImageMap
         return fastsend;
     }
     
-    public boolean isSimilar(String file, int x2, int y2)
+    public double getScale() 
+    {
+        return scale;
+    }
+    
+    public boolean isSimilar(String file, int x2, int y2, double d)
     {
         if (!getImage().equalsIgnoreCase(file))
             return false;
@@ -44,6 +51,7 @@ public class ImageMap
         if (getY() != y2)
             return false;
         
-        return true;
+        double diff=d - getScale();
+        return (diff > -0.0001 && diff < 0.0001);
     }
 }

@@ -11,4 +11,5 @@ commands:
 permissions:
     imagemaps.use:
         default: op
-    
+    imagemaps.download:
+        default: op

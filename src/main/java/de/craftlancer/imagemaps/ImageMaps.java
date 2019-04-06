@@ -5,9 +5,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
@@ -42,6 +44,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private Map<String, BufferedImage> images = new HashMap<>();
     private List<Integer> sendList = new ArrayList<>();
     private FastSendTask sendTask;
+    private List<ImageDownloadTask> downloadTasks;
     
     @Override
     public void onEnable() {
@@ -57,6 +60,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         sendTask = new FastSendTask(this, mapsPerSend);
         getServer().getPluginManager().registerEvents(sendTask, this);
         sendTask.runTaskTimer(this, sendPerTicks, sendPerTicks);
+        downloadTasks=new ArrayList<>();
+        new ImageDownloadCompleteNotifier(this).runTaskTimer(this, 20, 20);
     }
     
     @Override
@@ -69,8 +74,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return sendList;
     }
     
-    public void startPlacing(Player p, String image, boolean fastsend) {
-        placing.put(p.getName(), new PlacingCacheEntry(image, fastsend));
+    public void startPlacing(Player p, String image, boolean fastsend, double scale) {
+        placing.put(p.getName(), new PlacingCacheEntry(image, fastsend, scale));
     }
     
     public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache) {
@@ -104,8 +109,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         Block b = block.getRelative(face);
         
-        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
-        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
+        int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH * cache.getScale() - 0.0001);
+        int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT  * cache.getScale() - 0.0001);
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++) {
@@ -133,20 +138,23 @@ public class ImageMaps extends JavaPlugin implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent e) {
-        if (!e.hasBlock())
-            return;
-        
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
         
         if (!placing.containsKey(e.getPlayer().getName()))
             return;
+
+        if (!e.hasBlock()) {
+            e.getPlayer().sendMessage("Placing cancelled");
+            placing.remove(e.getPlayer().getName());
+            return;
+        }
         
         if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getName())))
             e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
         else
             saveMaps();
-        
+        e.setCancelled(true);
         placing.remove(e.getPlayer().getName());
         
     }
@@ -158,7 +166,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         i.setFacingDirection(face, false);
         
-        ItemStack item = getMapItem(cache.getImage(), x, y, image);
+        ItemStack item = getMapItem(cache.getImage(), x, y, image, cache.getScale());
         i.setItem(item);
         
         int id = ((MapMeta) item.getItemMeta()).getMapId();
@@ -168,27 +176,27 @@ public class ImageMaps extends JavaPlugin implements Listener {
             sendTask.addToQueue(id);
         }
         
-        maps.put(id, new ImageMap(cache.getImage(), x, y, sendList.contains(id)));
+        maps.put(id, new ImageMap(cache.getImage(), x, y, sendList.contains(id), cache.getScale()));
     }
     
     @SuppressWarnings("deprecation")
-    private ItemStack getMapItem(String file, int x, int y, BufferedImage image) {
+    private ItemStack getMapItem(String file, int x, int y, BufferedImage image, double scale) {
         ItemStack item = new ItemStack(Material.MAP);
         
         for (Entry<Integer, ImageMap> entry : maps.entrySet()) {
-            if (entry.getValue().isSimilar(file, x, y)) {
+            if (entry.getValue().isSimilar(file, x, y, scale)) {
                 MapMeta meta = (MapMeta) item.getItemMeta();
                 meta.setMapId(entry.getKey());
                 item.setItemMeta(meta);
                 return item;
             }
         }
-        
+
         MapView map = getServer().createMap(getServer().getWorlds().get(0));
         for (MapRenderer r : map.getRenderers())
             map.removeRenderer(r);
         
-        map.addRenderer(new ImageMapRenderer(image, x, y));
+        map.addRenderer(new ImageMapRenderer(image, x, y, scale));
 
         MapMeta meta = ((MapMeta) item.getItemMeta());
         meta.setMapId(map.getId());
@@ -197,7 +205,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return item;
     }
     
-    private BufferedImage loadImage(String file) {
+    public BufferedImage loadImage(String file) {
         if (images.containsKey(file))
             return images.get(file);
         
@@ -222,6 +230,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private void loadMaps() {
         File file = new File(getDataFolder(), "maps.yml");
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        Set<String> warnedFilenames=new HashSet<>();
         
         for (String key : config.getKeys(false)) {
             int id = Integer.parseInt(key);
@@ -238,19 +247,23 @@ public class ImageMaps extends JavaPlugin implements Listener {
             int x = config.getInt(key + ".x");
             int y = config.getInt(key + ".y");
             boolean fastsend = config.getBoolean(key + ".fastsend", false);
+            double scale = config.getDouble(key + ".scale", 1.0);
             
             BufferedImage bimage = loadImage(image);
             
             if (bimage == null) {
-                getLogger().warning(() -> "Image file " + image + " not found, removing this map!");
+                if (!warnedFilenames.contains(image)) {
+                    warnedFilenames.add(image);
+                    getLogger().warning(() -> "Image file " + image + " not found, removing this map!");
+                }
                 continue;
             }
             
             if (fastsend)
                 sendList.add(id);
             
-            map.addRenderer(new ImageMapRenderer(loadImage(image), x, y));
-            maps.put(id, new ImageMap(image, x, y, fastsend));
+            map.addRenderer(new ImageMapRenderer(loadImage(image), x, y, scale));
+            maps.put(id, new ImageMap(image, x, y, fastsend, scale));
         }
     }
     
@@ -266,6 +279,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
             config.set(e.getKey() + ".x", e.getValue().getX());
             config.set(e.getKey() + ".y", e.getValue().getY());
             config.set(e.getKey() + ".fastsend", e.getValue().isFastSend());
+            config.set(e.getKey() + ".scale", e.getValue().getScale());
         }
         
         try {
@@ -289,17 +303,24 @@ public class ImageMaps extends JavaPlugin implements Listener {
         int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH);
         int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT);
         
-        for (int x = 0; x < width; x++)
-            for (int y = 0; y < height; y++) {
-                int id = (short) ((MapMeta) getMapItem(file, x * MAP_WIDTH, y * MAP_HEIGHT, image).getItemMeta()).getMapId();
+        for (Entry<Integer, ImageMap> entry : maps.entrySet()) {
+            ImageMap imageMap = entry.getValue();
+            if (imageMap.getImage().equals(file)) {
+                int id=((MapMeta) getMapItem(file, imageMap.getX(), imageMap.getY(), image, imageMap.getScale()).getItemMeta()).getMapId();
                 MapView map = getServer().getMap(id);
-                
                 for (MapRenderer renderer : map.getRenderers())
                     if (renderer instanceof ImageMapRenderer)
-                        ((ImageMapRenderer) renderer).recalculateInput(image, x * MAP_WIDTH, y * MAP_HEIGHT);
-                
+                        ((ImageMapRenderer) renderer).recalculateInput(image, imageMap.getX(), imageMap.getY(), imageMap.getScale());
                 sendTask.addToQueue(id);
             }
-        
+        }
+    }
+    
+    public void appendDownloadTask(ImageDownloadTask task) {
+        this.downloadTasks.add(task);
+    }
+    
+    public List<ImageDownloadTask> getDownloadTasks() {
+        return this.downloadTasks;
     }
 }
