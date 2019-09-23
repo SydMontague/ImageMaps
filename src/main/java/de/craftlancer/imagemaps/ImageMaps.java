@@ -137,7 +137,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return true;
     }
     
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onInteract(PlayerInteractEvent e) {
         if (!placing.containsKey(e.getPlayer().getUniqueId()))
             return;
