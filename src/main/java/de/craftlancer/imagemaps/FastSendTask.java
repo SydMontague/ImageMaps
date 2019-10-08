@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.UUID;
 
+import de.craftlancer.imagemaps.services.MapService;
+import de.craftlancer.imagemaps.services.impl.MapServiceImpl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,6 +21,7 @@ public class FastSendTask extends BukkitRunnable implements Listener
     private Map<UUID, Queue<Integer>> status = new HashMap<>();
     private final ImageMaps plugin;
     private final int mapsPerRun;
+    private MapService mapService = MapServiceImpl.getInstance();
     
     public FastSendTask(ImageMaps plugin, int mapsPerSend)
     {
@@ -30,7 +33,7 @@ public class FastSendTask extends BukkitRunnable implements Listener
     @Override
     public void run()
     {
-        if (plugin.getFastSendList().isEmpty())
+        if (mapService.getFastSendList().isEmpty())
             return;
         
         for (Player p : plugin.getServer().getOnlinePlayers())
@@ -45,7 +48,7 @@ public class FastSendTask extends BukkitRunnable implements Listener
     private Queue<Integer> getStatus(Player p)
     {
         if (!status.containsKey(p.getUniqueId()))
-            status.put(p.getUniqueId(), new LinkedList<Integer>(plugin.getFastSendList()));
+            status.put(p.getUniqueId(), new LinkedList<Integer>(mapService.getFastSendList()));
         
         return status.get(p.getUniqueId());
     }
@@ -53,7 +56,7 @@ public class FastSendTask extends BukkitRunnable implements Listener
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerJoin(PlayerJoinEvent e)
     {
-        status.put(e.getPlayer().getUniqueId(), new LinkedList<Integer>(plugin.getFastSendList()));
+        status.put(e.getPlayer().getUniqueId(), new LinkedList<Integer>(mapService.getFastSendList()));
     }
     
     @EventHandler(priority = EventPriority.MONITOR)

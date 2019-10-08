@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import de.craftlancer.imagemaps.services.MapService;
+import de.craftlancer.imagemaps.services.impl.MapServiceImpl;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -15,6 +17,7 @@ import org.bukkit.entity.Player;
 public class ImageMapCommand implements TabExecutor
 {
     private ImageMaps plugin;
+    private MapService mapService = MapServiceImpl.getInstance();
     
     public ImageMapCommand(ImageMaps plugin)
     {
@@ -66,13 +69,13 @@ public class ImageMapCommand implements TabExecutor
 
         if(args.length >= 2 && args[1].equalsIgnoreCase("reload"))
         {
-            plugin.reloadImage(args[0]);
+            mapService.reloadImage(args[0]);
             sender.sendMessage("Image " + args[0] + " reloaded!");
             return true;
         }
         
         if (args.length >= 2 && args[1].equals("info")) {
-            BufferedImage image=plugin.loadImage(args[0]);
+            BufferedImage image=mapService.loadImage(args[0]);
             if (image == null) {
                 sender.sendMessage("Error getting this image, please consult server logs");
                 return true;
@@ -86,7 +89,7 @@ public class ImageMapCommand implements TabExecutor
         
         if (args.length >= 2 && args[1].equals("download")) {
             if (sender.hasPermission("imagemaps.download")) {
-                plugin.appendDownloadTask(new ImageDownloadTask(plugin, args[2], args[0], sender));
+                mapService.appendDownloadTask(new ImageDownloadTask(plugin, args[2], args[0], sender));
             } 
             else {
                 sender.sendMessage("You don't have download permission");
@@ -99,7 +102,7 @@ public class ImageMapCommand implements TabExecutor
             return true;
         }
         
-        BufferedImage image=plugin.loadImage(args[0]);
+        BufferedImage image=mapService.loadImage(args[0]);
         if (image == null) {
             sender.sendMessage("Error getting this image, please consult server logs");
             return true;
@@ -147,7 +150,7 @@ public class ImageMapCommand implements TabExecutor
         else
             finalScale = Math.min(scalex, scaley);
 
-        plugin.startPlacing((Player) sender, args[0], fastsend, finalScale);
+        mapService.startPlacing((Player) sender, args[0], fastsend, finalScale);
 
         int width = (int) Math.ceil((double) image.getWidth() / (double) ImageMaps.MAP_WIDTH * finalScale - 0.0001);
         int height = (int) Math.ceil((double) image.getHeight() / (double) ImageMaps.MAP_WIDTH  * finalScale - 0.0001);

@@ -7,6 +7,9 @@ package de.craftlancer.imagemaps;
 
 import java.util.Iterator;
 import java.util.List;
+
+import de.craftlancer.imagemaps.services.MapService;
+import de.craftlancer.imagemaps.services.impl.MapServiceImpl;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -14,6 +17,8 @@ import org.bukkit.scheduler.BukkitRunnable;
  * @author gbl
  */
 public class ImageDownloadCompleteNotifier extends BukkitRunnable {
+
+    private MapService mapService = MapServiceImpl.getInstance();
 
     private ImageMaps plugin;
     
@@ -23,7 +28,7 @@ public class ImageDownloadCompleteNotifier extends BukkitRunnable {
     
     @Override
     public void run() {
-        List<ImageDownloadTask> tasks = plugin.getDownloadTasks();
+        List<ImageDownloadTask> tasks = mapService.getDownloadTasks();
         
         Iterator<ImageDownloadTask> itr = tasks.iterator();
         while(itr.hasNext()) {
