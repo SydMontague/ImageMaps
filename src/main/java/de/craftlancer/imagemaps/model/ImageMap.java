@@ -1,4 +1,4 @@
-package de.craftlancer.imagemaps;
+package de.craftlancer.imagemaps.model;
 
 public class ImageMap
 {

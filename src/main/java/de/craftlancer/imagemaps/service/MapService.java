@@ -1,7 +1,7 @@
-package de.craftlancer.imagemaps.services;
+package de.craftlancer.imagemaps.service;
 
-import de.craftlancer.imagemaps.ImageDownloadTask;
-import de.craftlancer.imagemaps.PlacingCacheEntry;
+import de.craftlancer.imagemaps.task.ImageDownloadTask;
+import de.craftlancer.imagemaps.model.PlacingCacheEntry;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;

@@ -1,7 +1,10 @@
-package de.craftlancer.imagemaps.services.impl;
+package de.craftlancer.imagemaps.service.impl;
 
 import de.craftlancer.imagemaps.*;
-import de.craftlancer.imagemaps.services.MapService;
+import de.craftlancer.imagemaps.model.ImageMap;
+import de.craftlancer.imagemaps.model.PlacingCacheEntry;
+import de.craftlancer.imagemaps.service.MapService;
+import de.craftlancer.imagemaps.task.ImageDownloadTask;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

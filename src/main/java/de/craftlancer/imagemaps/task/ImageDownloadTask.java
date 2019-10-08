@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.craftlancer.imagemaps;
+package de.craftlancer.imagemaps.task;
 
 import java.io.Closeable;
 import java.io.File;
@@ -19,6 +19,7 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.CompletableFuture;
 
+import de.craftlancer.imagemaps.ImageMaps;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -33,7 +34,7 @@ public class ImageDownloadTask implements Runnable {
     private CommandSender sender;
     private CompletableFuture future;
     
-    ImageDownloadTask(ImageMaps plugin, String url, String filename, CommandSender sender) {
+    public ImageDownloadTask(ImageMaps plugin, String url, String filename, CommandSender sender) {
         this.plugin = plugin;
         this.sender = sender;
         this.downloadUrl = url;

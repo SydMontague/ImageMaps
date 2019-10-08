@@ -1,4 +1,4 @@
-package de.craftlancer.imagemaps;
+package de.craftlancer.imagemaps.command;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -7,8 +7,10 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.craftlancer.imagemaps.services.MapService;
-import de.craftlancer.imagemaps.services.impl.MapServiceImpl;
+import de.craftlancer.imagemaps.task.ImageDownloadTask;
+import de.craftlancer.imagemaps.ImageMaps;
+import de.craftlancer.imagemaps.service.MapService;
+import de.craftlancer.imagemaps.service.impl.MapServiceImpl;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;

@@ -3,13 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package de.craftlancer.imagemaps;
+package de.craftlancer.imagemaps.task;
 
 import java.util.Iterator;
 import java.util.List;
 
-import de.craftlancer.imagemaps.services.MapService;
-import de.craftlancer.imagemaps.services.impl.MapServiceImpl;
+import de.craftlancer.imagemaps.ImageMaps;
+import de.craftlancer.imagemaps.service.MapService;
+import de.craftlancer.imagemaps.service.impl.MapServiceImpl;
+import de.craftlancer.imagemaps.task.ImageDownloadTask;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**

@@ -1,7 +1,7 @@
-package de.craftlancer.imagemaps.events;
+package de.craftlancer.imagemaps.event;
 
-import de.craftlancer.imagemaps.services.MapService;
-import de.craftlancer.imagemaps.services.impl.MapServiceImpl;
+import de.craftlancer.imagemaps.service.MapService;
+import de.craftlancer.imagemaps.service.impl.MapServiceImpl;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
