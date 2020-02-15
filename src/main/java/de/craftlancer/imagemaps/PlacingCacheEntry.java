@@ -2,9 +2,9 @@ package de.craftlancer.imagemaps;
 
 public class PlacingCacheEntry
 {
-    private String image;
-    private boolean fastsend;
-    private double scale;
+    private final String image;
+    private final boolean fastsend;
+    private final double scale;
     
     public PlacingCacheEntry(String image, boolean fastsend, double scale)
     {

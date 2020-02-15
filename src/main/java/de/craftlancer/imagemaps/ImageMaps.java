@@ -15,6 +15,7 @@ import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -79,7 +80,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         placing.put(p.getUniqueId(), new PlacingCacheEntry(image, fastsend, scale));
     }
     
-    public boolean placeImage(Block block, BlockFace face, PlacingCacheEntry cache) {
+    public boolean placeImage(Player player, Block block, BlockFace face, PlacingCacheEntry cache) {
         int xMod = 0;
         int zMod = 0;
         
@@ -112,6 +113,11 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         int width = (int) Math.ceil((double) image.getWidth() / (double) MAP_WIDTH * cache.getScale() - 0.0001);
         int height = (int) Math.ceil((double) image.getHeight() / (double) MAP_HEIGHT  * cache.getScale() - 0.0001);
+        
+        ImagePlaceEvent event = new ImagePlaceEvent(player, block, face, width, height, cache);
+        Bukkit.getPluginManager().callEvent(event);
+        if(event.isCancelled()) 
+            return false;
         
         for (int x = 0; x < width; x++)
             for (int y = 0; y < height; y++) {
@@ -151,7 +157,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         if (e.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
         
-        if (!placeImage(e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getUniqueId())))
+        if (!placeImage(e.getPlayer(), e.getClickedBlock(), e.getBlockFace(), placing.get(e.getPlayer().getUniqueId())))
             e.getPlayer().sendMessage(ChatColor.RED + "Can't place the image here!\nMake sure the area is large enough, unobstructed and without pre-existing hanging entities.");
         else
             saveMaps();
