@@ -7,15 +7,15 @@
   <version>1.0.0-SNAPSHOT</version>
   <name>ImageMaps</name>
   <description>Draw Images on maps!</description>
-  
+
   <distributionManagement>
-     <repository>
-       <id>github-clcore</id>
-       <name>GitHub CLCore Packages</name>
-       <url>https://maven.pkg.github.com/SydMontague/ImageMaps</url>
-     </repository>
+    <repository>
+      <id>github</id>
+      <name>GitHub SydMontague Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/SydMontague/ImageMaps</url>
+    </repository>
   </distributionManagement>
-  
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -27,8 +27,8 @@
     </repository>
     <repository>
       <id>github</id>
-      <name>GitHub SydMontague Apache Maven Packages</name>
-      <url>https://maven.pkg.github.com/SydMontague/</url>
+      <name>GitHub CLCore Packages</name>
+      <url>https://maven.pkg.github.com/SydMontague/CLCore</url>
     </repository>
   </repositories>
 
@@ -43,6 +43,12 @@
       <groupId>de.craftlancer</groupId>
       <artifactId>clcore</artifactId>
       <version>0.4.0-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
