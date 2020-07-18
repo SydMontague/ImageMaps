@@ -1,15 +1,42 @@
 main: de.craftlancer.imagemaps.ImageMaps
 author: SydMontague
 version: ${project.version}
+api-version: 1.13
 name: ImageMaps
 commands:
     imagemap:
         usage: |
-          /imagemap <file> <fastsend> - then rightlick on a block, fastsend is either true or false
-          /imagemap <file> reload - reloads the imagefile
-        permission: imagemaps.use
+          /imagemap place <filename> [frameVisible] [frameFixed] [size] - starts image placement
+          /imagemap download <filename> <sourceURL> - downloads an image
+          /imagemap info <filename> - displays image info
+          /imagemap reload <filename> - reloads an image from disk
+          /imagemap list [page] - lists all files in the images folder
+          /imagemap help [command] - shows help
 permissions:
-    imagemaps.use:
+    imagemaps.*:
+        default: op
+        children:
+          imagemaps.place: true
+          imagemaps.download: true
+          imagemaps.info: true
+          imagemaps.list: true
+          imagemaps.reload: true
+          imagemaps.help: true
+          imagemaps.toggleFixed: true
+          imagemaps.toggleVisible: true
+    imagemaps.place:
         default: op
     imagemaps.download:
+        default: op
+    imagemaps.info:
+        default: op
+    imagemaps.list:
+        default: op
+    imagemaps.reload:
+        default: op
+    imagemaps.help:
+        default: op
+    imagemaps.toggleFixed:
+        default: op
+    imagemaps.toggleVisible:
         default: op

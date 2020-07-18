@@ -1,57 +1,90 @@
 package de.craftlancer.imagemaps;
 
-public class ImageMap
-{
-    private String image;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+
+public class ImageMap implements ConfigurationSerializable {
+    
+    private String filename;
     private int x;
     private int y;
-    private boolean fastsend;
     private double scale;
     
-    public ImageMap(String image, int x, int y, boolean fastsend, double scale)
-    {
-        this.image = image;
+    public ImageMap(String filename, int x, int y, double scale) {
+        this.filename = filename;
         this.x = x;
         this.y = y;
-        this.fastsend = fastsend;
         this.scale = scale;
     }
     
-    public String getImage()
-    {
-        return image;
+    public ImageMap(Map<?, ?> map) {
+        this.filename = map.get("image").toString();
+        this.x = (Integer) map.get("x");
+        this.y = (Integer) map.get("y");
+        this.scale = (Double) map.get("scale");
     }
     
-    public int getX()
-    {
+    @Override
+    public Map<String, Object> serialize() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("image", filename);
+        map.put("x", x);
+        map.put("y", y);
+        map.put("scale", scale);
+        
+        return map;
+    }
+    
+    public String getFilename() {
+        return filename;
+    }
+    
+    public int getX() {
         return x;
     }
     
-    public int getY()
-    {
+    public int getY() {
         return y;
     }
     
-    public boolean isFastSend()
-    {
-        return fastsend;
-    }
-    
-    public double getScale() 
-    {
+    public double getScale() {
         return scale;
     }
     
-    public boolean isSimilar(String file, int x2, int y2, double d)
-    {
-        if (!getImage().equalsIgnoreCase(file))
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((filename == null) ? 0 : filename.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(scale);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + x;
+        result = prime * result + y;
+        return result;
+    }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (!(obj instanceof ImageMap))
             return false;
-        if (getX() != x2)
+        ImageMap other = (ImageMap) obj;
+        if (filename == null) {
+            if (other.filename != null)
+                return false;
+        }
+        else if (!filename.equals(other.filename))
             return false;
-        if (getY() != y2)
+        if (Double.doubleToLongBits(scale) != Double.doubleToLongBits(other.scale))
             return false;
-        
-        double diff = d - getScale();
-        return (diff > -0.0001 && diff < 0.0001);
+        if (x != other.x)
+            return false;
+        if (y != other.y)
+            return false;
+        return true;
     }
 }

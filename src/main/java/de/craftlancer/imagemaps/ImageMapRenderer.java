@@ -9,46 +9,47 @@ import org.bukkit.map.MapCanvas;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
 
-public class ImageMapRenderer extends MapRenderer
-{
+public class ImageMapRenderer extends MapRenderer {
     private BufferedImage image = null;
     private boolean first = true;
     
-    public ImageMapRenderer(BufferedImage image, int x1, int y1, double scale)
-    {
-        recalculateInput(image, x1, y1, scale);
+    private final int x;
+    private final int y;
+    private final double scale;
+    
+    public ImageMapRenderer(BufferedImage image, int x, int y, double scale) {
+        this.x = x;
+        this.y = y;
+        this.scale = scale;
+        recalculateInput(image);
     }
     
-    public void recalculateInput(BufferedImage input, int x1, int y1, double scale)
-    {
-        int x2 = ImageMaps.MAP_WIDTH;
-        int y2 = ImageMaps.MAP_HEIGHT;
-        
-        if (x1 > input.getWidth()* scale + 0.001 || y1 > input.getHeight() * scale + 0.001)
+    public void recalculateInput(BufferedImage input) {
+        if (x * ImageMaps.MAP_WIDTH > input.getWidth() * scale || y * ImageMaps.MAP_HEIGHT > input.getHeight() * scale)
             return;
         
-        if (x1 + x2 >= input.getWidth() * scale)
-            x2 = (int)(input.getWidth() * scale) - x1;
+        int x1 = (int) Math.round(x * ImageMaps.MAP_WIDTH / scale);
+        int y1 = (int) Math.round(y * ImageMaps.MAP_HEIGHT / scale);
         
-        if (y1 + y2 >= input.getHeight() * scale)
-            y2 = (int)(input.getHeight() * scale) - y1;
-
-        this.image = input.getSubimage((int)(x1/scale), (int)(y1/scale), (int)(x2/scale), (int)(y2/scale));
-        if (scale != 1.0) {
+        int x2 = (int) Math.round(Math.min(input.getWidth(), ((x + 1) * ImageMaps.MAP_WIDTH / scale)));
+        int y2 = (int) Math.round(Math.min(input.getHeight(), ((y + 1) * ImageMaps.MAP_HEIGHT / scale)));
+        
+        this.image = input.getSubimage(x1, y1, x2 - x1, y2 - y1);
+        
+        if (scale != 1D) {
             BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT, input.getType());
             AffineTransform at = new AffineTransform();
             at.scale(scale, scale);
-            AffineTransformOp scaleOp =  new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+            AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
             this.image = scaleOp.filter(this.image, resized);
         }
+        
         first = true;
     }
     
     @Override
-    public void render(MapView view, MapCanvas canvas, Player player)
-    {
-        if (image != null && first)
-        {
+    public void render(MapView view, MapCanvas canvas, Player player) {
+        if (image != null && first) {
             canvas.drawImage(0, 0, image);
             first = false;
         }

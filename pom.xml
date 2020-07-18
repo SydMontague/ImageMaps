@@ -1,30 +1,51 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>de.craftlancer.imagemaps</groupId>
   <artifactId>ImageMaps</artifactId>
-  <version>0.5.0</version>
+  <version>1.0.0-SNAPSHOT</version>
   <name>ImageMaps</name>
   <description>Draw Images on maps!</description>
+  
+  <distributionManagement>
+     <repository>
+       <id>github-clcore</id>
+       <name>GitHub CLCore Packages</name>
+       <url>https://maven.pkg.github.com/SydMontague/ImageMaps</url>
+     </repository>
+  </distributionManagement>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
-  
+
   <repositories>
     <repository>
       <id>spigot-repo</id>
       <url>http://hub.spigotmc.org/nexus/content/groups/public/</url>
     </repository>
+    <repository>
+      <id>github</id>
+      <name>GitHub SydMontague Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/SydMontague/</url>
+    </repository>
   </repositories>
-  
+
   <dependencies>
     <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.13.2-R0.1-SNAPSHOT</version>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.16.1-R0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>de.craftlancer</groupId>
+      <artifactId>clcore</artifactId>
+      <version>0.4.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
-  
+
   <build>
     <resources>
       <resource>
@@ -36,14 +57,53 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>de.craftlancer:clcore</artifact>
+              <includes>
+                <include>de/craftlancer/core/command/*</include>
+                <include>de/craftlancer/core/util/*</include>
+                <include>de/craftlancer/core/LambdaRunnable*</include>
+                <include>de/craftlancer/core/Utils*</include>
+                <include>de/craftlancer/core/SemanticVersion*</include>
+              </includes>
+            </filter>
+          </filters>
+          <artifactSet>
+            <includes>
+              <include>de.craftlancer:clcore</include>
+            </includes>
+          </artifactSet>
+          <relocations>
+            <relocation>
+              <pattern>de.craftlancer.core</pattern>
+              <shadedPattern>de.craftlancer.imagemaps.clcore</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>3.8.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
         </configuration>
       </plugin>
-      
+
     </plugins>
   </build>
 </project>
