@@ -78,9 +78,9 @@ You will need to [configure your environment to access GitHub repositories](http
 ```
 
 ## Contact 
-Discord: SydMontague#8056
-directly on GitHub
-E-Mail: sydmontague@web.de
-Spigot: https://www.spigotmc.org/members/sydmontague.37699/
+* Discord: SydMontague#8056
+* directly on GitHub
+* E-Mail: sydmontague@web.de
+* Spigot: https://www.spigotmc.org/members/sydmontague.37699/
 
 This plugin has been developed for the [CraftCitizen](https://craftcitizen.net) survival Minecraft server.
