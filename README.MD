@@ -49,6 +49,7 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
   * prints help for commands
   
 ### Permissions
+`imagemaps.*` - grants access to all permissions
 `imagemaps.place` - grants access to /imagemap place command
 `imagemaps.download` - grants access to /download place command
 `imagemaps.info` - grants access to /imagemap info command
@@ -57,6 +58,8 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 `imagemaps.help` - grants access to /imagemap help command
 `imagemaps.toggleFixed` - allows to toggle the "fixed" state of frames with a wooden hoe
 `imagemaps.toggleVisible` - allows to toggle the "visible" state of frames with a wooden hoe
+
+All permissions are default true for OPs.
 
 
 ## Maven
