@@ -1,4 +1,4 @@
-package de.craftlancer.imagemaps;
+package net.craftcitizen.imagemaps;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

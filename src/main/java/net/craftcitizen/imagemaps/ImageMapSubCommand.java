@@ -1,4 +1,4 @@
-package de.craftlancer.imagemaps;
+package net.craftcitizen.imagemaps;
 
 import de.craftlancer.core.command.SubCommand;
 

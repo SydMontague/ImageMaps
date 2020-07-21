@@ -1,4 +1,4 @@
-package de.craftlancer.imagemaps;
+package net.craftcitizen.imagemaps;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -35,6 +35,8 @@ import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.google.common.io.Files;
 
 import de.craftlancer.core.LambdaRunnable;
 import de.craftlancer.core.SemanticVersion;
@@ -176,6 +178,14 @@ public class ImageMaps extends JavaPlugin implements Listener {
     
     private Configuration convertLegacyMaps(Configuration config) {
         getLogger().info("Converting maps from Version <1.0");
+        
+        try {
+            Files.copy(new File(getDataFolder(), "maps.yml"), new File(getDataFolder(), "maps.yml.backup"));
+        }
+        catch (IOException e) {
+            getLogger().severe("Failed to backup maps.yml!");
+            e.printStackTrace();
+        }
         
         Map<Integer, ImageMap> map = new HashMap<>();
         

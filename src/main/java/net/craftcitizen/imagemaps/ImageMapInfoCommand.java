@@ -1,4 +1,4 @@
-package de.craftlancer.imagemaps;
+package net.craftcitizen.imagemaps;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
