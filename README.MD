@@ -1,22 +1,22 @@
-== ImageMaps ==
+# ImageMaps
 
 ImageMaps is a plugin for Bukkit Minecraft servers that enables you to place custom images in your world
 by rendering them onto maps and placing them in item frames.
 
 This can be used to create info graphics, custom paintings and even the appearance of custom textures.
 
-=== Installation ===
+## Installation
 You will need a Server that implements Bukkit 1.13 or newer. Some features are only available in newer
 releases. Make sure to use the latest release of your server software before reporting issues.
 
 Put the plugin into your servers `plugins` folder and start it up. A folder for the plugin will be created 
 automatically. You can place your images in the `images` folder inside it.
 
-==== Upgrading from versions < 1.0.0 ====
+### Upgrading from versions < 1.0.0
 The plugin should convert your maps.yml automatically. It will attempt to create a backup before doing so, 
 but it is recommended to do one manually as well.
 
-=== Usage ===
+## Usage
 In order for you use place images they must be present in the `images` folder. You can either put them
 there via FTP or just copying it, or by using the plugin's download command, allowing you to access
 images from the Internet.
@@ -31,9 +31,9 @@ The color palette of Minecraft maps is very limited, requiring the plugin/Bukkit
 This will result in your images looking different ingame than the source. The available color table can be
 found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 
-![Example of color conversion](colorConversion.png)
+![Example of color conversion](./colorConversion.png)
 
-==== Commands ====
+### Commands
 * /imagemap place <filename> [frameVisible] [frameFixed] [size]
   * Starts the placement process
   * frameVisible and frameFixed are only available on 1.16+
@@ -48,7 +48,7 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 * /imagemap help [command]
   * prints help for commands
   
-==== Permissions ====
+### Permissions
 `imagemaps.place` - grants access to /imagemap place command
 `imagemaps.download` - grants access to /download place command
 `imagemaps.info` - grants access to /imagemap info command
@@ -59,7 +59,7 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 `imagemaps.toggleVisible` - allows to toggle the "visible" state of frames with a wooden hoe
 
 
-=== Maven ===
+## Maven
 You will need to [configure your environment to access GitHub repositories](https://docs.github.com/en/packages/using-github-packages-with-your-projects-ecosystem/configuring-apache-maven-for-use-with-github-packages).
 
 ```
@@ -77,7 +77,7 @@ You will need to [configure your environment to access GitHub repositories](http
 </dependency>
 ```
 
-=== Contact === 
+## Contact 
 Discord: SydMontague#8056
 directly on GitHub
 E-Mail: sydmontague@web.de
