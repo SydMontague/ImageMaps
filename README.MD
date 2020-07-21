@@ -22,7 +22,7 @@ there via FTP or just copying it, or by using the plugin's download command, all
 images from the Internet.
 
 To place images just run the `/imagemap place` command and right click the block that should be the
-upper right corner of the image (based on your perspective).
+upper left corner of the image (based on your perspective).
 
 Images will by default split into 128x128 pixel sub-images to fit on a map. The image may be scaled via
 command parameters, however **it is recommended to prepare correctly scaled images**.
