@@ -78,7 +78,7 @@ You will need to [configure your environment to access GitHub repositories](http
 <dependency>
   <groupId>net.craftcitizen</groupId>
   <artifactId>imagemaps</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
