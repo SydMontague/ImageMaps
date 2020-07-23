@@ -50,6 +50,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class ImageMaps extends JavaPlugin implements Listener {
+    private static final String MAPS_YML = "maps.yml";
     private static final String CONFIG_VERSION_KEY = "storageVersion";
     private static final int CONFIG_VERSION = 1;
     private static final long AUTOSAVE_PERIOD = 18000L; // 15 minutes
@@ -137,7 +138,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         BukkitRunnable saveTask = new LambdaRunnable(() -> {
             try {
-                config.save(new File(getDataFolder(), "maps.yml"));
+                config.save(new File(getDataFolder(), MAPS_YML));
             }
             catch (IOException e) {
                 e.printStackTrace();
@@ -151,7 +152,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     }
     
     private void loadMaps() {
-        Configuration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), "maps.yml"));
+        Configuration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), MAPS_YML));
         int version = config.getInt(CONFIG_VERSION_KEY, -1);
         
         if (version == -1)
@@ -167,7 +168,11 @@ public class ImageMaps extends JavaPlugin implements Listener {
                 BufferedImage image = getImage(imageMap.getFilename());
                 
                 if (image == null) {
-                    getLogger().warning(() -> "Image file " + image + " not found. Removing map!");
+                    getLogger().warning(() -> "Image file " + imageMap.getFilename() + " not found. Removing map!");
+                    return;
+                }
+                if (map == null) {
+                    getLogger().warning(() -> "Map " + id + " referenced but does not exist. Removing map!");
                     return;
                 }
                 
@@ -180,7 +185,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         getLogger().info("Converting maps from Version <1.0");
         
         try {
-            Files.copy(new File(getDataFolder(), "maps.yml"), new File(getDataFolder(), "maps.yml.backup"));
+            Files.copy(new File(getDataFolder(), MAPS_YML), new File(getDataFolder(), MAPS_YML + ".backup"));
         }
         catch (IOException e) {
             getLogger().severe("Failed to backup maps.yml!");

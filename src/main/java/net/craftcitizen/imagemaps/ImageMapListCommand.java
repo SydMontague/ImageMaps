@@ -11,6 +11,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
 
 public class ImageMapListCommand extends ImageMapSubCommand {
     
@@ -24,18 +25,16 @@ public class ImageMapListCommand extends ImageMapSubCommand {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "You can't run this command.");
             return null;
         }
-        
-        long page = args.length >= 2 ? Utils.parseIntegerOrDefault(args[1], 0) - 1 : 0;
-        
+
         String[] fileList = new File(plugin.getDataFolder(), "images").list();
+        long page = args.length >= 2 ? Utils.parseIntegerOrDefault(args[1], 0) - 1 : 0;
+        int numPages = (int) Math.ceil((double) fileList.length / Utils.ELEMENTS_PER_PAGE);
         
-        MessageUtil.sendMessage(plugin,
-                                sender,
-                                MessageLevel.INFO,
-                                String.format("Image List %d/%d", page + 1, (int) Math.ceil((double) fileList.length / Utils.ELEMENTS_PER_PAGE)));
         
-        // TODO alternating color
-        Utils.paginate(fileList, page).forEach(filename -> {
+        MessageUtil.sendMessage(plugin, sender, MessageLevel.INFO, String.format("## Image List Page %d of %d ##", page + 1, numPages));
+        
+        boolean even = false;
+        for(String filename : Utils.paginate(fileList, page)) {
             BaseComponent infoAction = new TextComponent("[Info]");
             infoAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/imagemap info " + filename));
             infoAction.setColor(ChatColor.GOLD);
@@ -47,6 +46,7 @@ public class ImageMapListCommand extends ImageMapSubCommand {
             placeAction.setColor(ChatColor.GOLD);
             
             BaseComponent message = new TextComponent(filename);
+            message.setColor(even ? ChatColor.GRAY : ChatColor.WHITE);
             message.addExtra(" ");
             message.addExtra(infoAction);
             message.addExtra(" ");
@@ -55,7 +55,19 @@ public class ImageMapListCommand extends ImageMapSubCommand {
             message.addExtra(placeAction);
             
             MessageUtil.sendMessage(plugin, sender, MessageLevel.NORMAL, message);
-        });
+            even = !even;
+        }
+        
+        BaseComponent navigation = new TextComponent();
+        BaseComponent prevPage = new TextComponent(String.format("<< Page %d", Math.max(page, 1)));
+        BaseComponent nextPage = new TextComponent(String.format("Page %d >>", Math.min(page + 1, numPages)));
+        prevPage.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/imagemap list " + Math.max(page, 1)));
+        nextPage.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/imagemap list " + Math.min(page + 2, numPages)));
+        
+        navigation.addExtra(prevPage);
+        navigation.addExtra(" | ");
+        navigation.addExtra(nextPage);
+        MessageUtil.sendMessage(plugin, sender, MessageLevel.INFO, navigation);
         return null;
     }
     

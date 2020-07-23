@@ -40,7 +40,7 @@ public class ImageMapReloadCommand extends ImageMapSubCommand {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Image reloaded.");
         else
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Image couldn't be reloaded (does it exist?).");
-
+        
         return null;
     }
     

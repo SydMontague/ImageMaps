@@ -15,9 +15,6 @@ import de.craftlancer.core.util.MessageLevel;
 import de.craftlancer.core.util.MessageUtil;
 import de.craftlancer.core.util.Tuple;
 
-/*
- * imagemap place <image> <scale> <isVisible> <isFixed>
- */
 public class ImageMapPlaceCommand extends ImageMapSubCommand {
     
     public ImageMapPlaceCommand(ImageMaps plugin) {

@@ -5,6 +5,8 @@ by rendering them onto maps and placing them in item frames.
 
 This can be used to create info graphics, custom paintings and even the appearance of custom textures.
 
+![Example Screenshot](./screenshot.png)
+
 ## Installation
 You will need a Server that implements Bukkit 1.13 or newer. Some features are only available in newer
 releases. Make sure to use the latest release of your server software before reporting issues.
