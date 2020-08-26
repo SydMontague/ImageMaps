@@ -64,6 +64,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
     private Map<String, BufferedImage> imageCache = new HashMap<>();
     private Map<ImageMap, Integer> maps = new HashMap<>();
     
+    private Material toggleItem;
+    
     static {
         ConfigurationSerialization.registerClass(ImageMap.class);
     }
@@ -76,6 +78,14 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         if (!new File(getDataFolder(), IMAGES_DIR).exists())
             new File(getDataFolder(), IMAGES_DIR).mkdirs();
+        
+        saveDefaultConfig();
+        
+        toggleItem = Material.matchMaterial(getConfig().getString("toggleItem", Material.WOODEN_HOE.name()));
+        if (toggleItem == null) {
+            toggleItem = Material.WOODEN_HOE;
+            getLogger().warning("Given toggleItem is invalid, defaulting to WOODEN_HOE");
+        }
         
         getCommand("imagemap").setExecutor(new ImageMapCommandHandler(this));
         getServer().getPluginManager().registerEvents(this, this);
@@ -101,19 +111,21 @@ public class ImageMaps extends JavaPlugin implements Listener {
         ItemFrame frame = (ItemFrame) event.getRightClicked();
         Player p = event.getPlayer();
         
-        if (p.getInventory().getItemInMainHand().getType() != Material.WOODEN_HOE)
+        if (p.getInventory().getItemInMainHand().getType() != toggleItem)
             return;
         
-        if (p.isSneaking() && p.hasPermission("imagemaps.toggleFixed")) {
-            frame.setFixed(!frame.isFixed());
-            MessageUtil.sendMessage(this, p, MessageLevel.INFO, String.format("Frame set to %s.", frame.isFixed() ? "fixed" : "unfixed"));
+        if (p.isSneaking()) {
+            if (p.hasPermission("imagemaps.toggleFixed")) {
+                event.setCancelled(true);
+                frame.setFixed(!frame.isFixed());
+                MessageUtil.sendMessage(this, p, MessageLevel.INFO, String.format("Frame set to %s.", frame.isFixed() ? "fixed" : "unfixed"));
+            }
         }
         else if (p.hasPermission("imagemaps.toggleVisible")) {
+            event.setCancelled(true);
             frame.setVisible(!frame.isVisible());
             MessageUtil.sendMessage(this, p, MessageLevel.INFO, String.format("Frame set to %s.", frame.isVisible() ? "visible" : "invisible"));
         }
-        
-        event.setCancelled(true);
     }
     
     public boolean isInvisibilitySupported() {
@@ -152,7 +164,12 @@ public class ImageMaps extends JavaPlugin implements Listener {
     }
     
     private void loadMaps() {
-        Configuration config = YamlConfiguration.loadConfiguration(new File(getDataFolder(), MAPS_YML));
+        File configFile = new File(getDataFolder(), MAPS_YML);
+        
+        if(!configFile.exists())
+            return;
+        
+        Configuration config = YamlConfiguration.loadConfiguration(configFile);
         int version = config.getInt(CONFIG_VERSION_KEY, -1);
         
         if (version == -1)
