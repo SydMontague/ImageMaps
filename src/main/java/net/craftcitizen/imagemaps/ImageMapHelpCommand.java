@@ -25,7 +25,7 @@ public class ImageMapHelpCommand extends HelpCommand {
             MessageUtil.sendMessage(getPlugin(),
                                     sender,
                                     MessageLevel.NORMAL,
-                                    buildMessage("/imagemap place <filename> [frameVisible] [frameFixed] [size]", " - starts image placement"));
+                                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [size]", " - starts image placement"));
         else
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap place <filename> [size]", " - starts image placement"));
         

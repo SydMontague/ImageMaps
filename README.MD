@@ -14,7 +14,7 @@ releases. Make sure to use the latest release of your server software before rep
 Put the plugin into your servers `plugins` folder and start it up. A folder for the plugin will be created 
 automatically. You can place your images in the `images` folder inside it.
 
-### Upgrading from versions < 1.0.0
+### Upgrading from versions &lt; 1.0.0
 The plugin should convert your maps.yml automatically. It will attempt to create a backup before doing so, 
 but it is recommended to do one manually as well.
 
@@ -36,14 +36,14 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 ![Example of color conversion](./colorConversion.png)
 
 ### Commands
-* /imagemap place <filename> [frameVisible] [frameFixed] [size]
+* /imagemap place &lt;filename> [frameInvisible] [frameFixed] [size]
   * Starts the placement process
   * frameVisible and frameFixed are only available on 1.16+
-* /imagemap download <filename> <sourceURL>
+* /imagemap download &lt;filename> &lt;sourceURL>
   * downloads an image from the given URL into the `images` folder
-* /imagemap info <filename>
+* /imagemap info &lt;filename>
   * prints info, such as resolution and expected size
-* /imagemap reload <filename>
+* /imagemap reload &lt;filename>
   * reloads an image, to be used when the image file changed
 * /imagemap list [page]
   * lists all images in the `images` folder
