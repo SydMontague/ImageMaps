@@ -192,7 +192,9 @@ public class ImageMaps extends JavaPlugin implements Listener {
                     getLogger().warning(() -> "Map " + id + " referenced but does not exist. Removing map!");
                     return;
                 }
-                
+
+                map.setTrackingPosition(false);
+                map.getRenderers().forEach(map::removeRenderer);
                 map.addRenderer(new ImageMapRenderer(image, imageMap.getX(), imageMap.getY(), imageMap.getScale()));
                 maps.put(imageMap, id);
             });
@@ -393,6 +395,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         MapView map = getServer().createMap(getServer().getWorlds().get(0));
         map.getRenderers().forEach(map::removeRenderer);
         map.addRenderer(new ImageMapRenderer(image, x, y, getScale(image, data.getSize())));
+        map.setTrackingPosition(false);
         
         MapMeta meta = ((MapMeta) item.getItemMeta());
         meta.setMapView(map);

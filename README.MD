@@ -35,10 +35,14 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 
 ![Example of color conversion](./colorConversion.png)
 
+The invisible and fixed item frame properties are only available in 1.16+. You can modify them for any item frame
+by using a configurable (default a wooden hoe) items. Right click to toggle visibility and Shift+Right click to 
+toggle the fixed state.
+
 ### Commands
 * /imagemap place &lt;filename> [frameInvisible] [frameFixed] [size]
   * Starts the placement process
-  * frameVisible and frameFixed are only available on 1.16+
+  * frameInvisible and frameFixed are only available on 1.16+
 * /imagemap download &lt;filename> &lt;sourceURL>
   * downloads an image from the given URL into the `images` folder
 * /imagemap info &lt;filename>
