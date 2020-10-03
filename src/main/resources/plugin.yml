@@ -5,6 +5,8 @@ api-version: 1.13
 name: ImageMaps
 commands:
     imagemap:
+        description: ImageMaps plugin commands, place images on walls
+        permission-message: You do not have permission to use this command.
         usage: |
           /imagemap place <filename> [frameVisible] [frameFixed] [size] - starts image placement
           /imagemap download <filename> <sourceURL> - downloads an image
