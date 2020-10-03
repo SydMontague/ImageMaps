@@ -1,6 +1,6 @@
 # ImageMaps
 
-ImageMaps is a plugin for Bukkit Minecraft servers that enables you to place custom images in your world
+ImageMaps is a plugin for Bukkit  Minecraft servers that enables you to place custom images in your world
 by rendering them onto maps and placing them in item frames.
 
 This can be used to create info graphics, custom paintings and even the appearance of custom textures.
@@ -8,7 +8,7 @@ This can be used to create info graphics, custom paintings and even the appearan
 ![Example Screenshot](./screenshot.png)
 
 ## Installation
-You will need a Server that implements Bukkit 1.13 or newer. Some features are only available in newer
+You will need a Server that implements Bukkit 1.13 or newer and the Spigot-API. Some features are only available in newer
 releases. Make sure to use the latest release of your server software before reporting issues.
 
 Put the plugin into your servers `plugins` folder and start it up. A folder for the plugin will be created 
