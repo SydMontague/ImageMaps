@@ -143,6 +143,12 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return version.getMinor() > 14;
     }
     
+    public boolean isSetTrackingSupported() {
+        SemanticVersion version = Utils.getMCVersion();
+        
+        return version.getMajor() >= 1 && version.getMinor() >= 14;
+    }
+    
     private void saveMaps() {
         FileConfiguration config = new YamlConfiguration();
         config.set(CONFIG_VERSION_KEY, CONFIG_VERSION);
@@ -193,7 +199,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
                     return;
                 }
 
-                map.setTrackingPosition(false);
+                if(isSetTrackingSupported())
+                    map.setTrackingPosition(false);
                 map.getRenderers().forEach(map::removeRenderer);
                 map.addRenderer(new ImageMapRenderer(image, imageMap.getX(), imageMap.getY(), imageMap.getScale()));
                 maps.put(imageMap, id);
@@ -395,7 +402,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         MapView map = getServer().createMap(getServer().getWorlds().get(0));
         map.getRenderers().forEach(map::removeRenderer);
         map.addRenderer(new ImageMapRenderer(image, x, y, getScale(image, data.getSize())));
-        map.setTrackingPosition(false);
+        if(isSetTrackingSupported())
+            map.setTrackingPosition(false);
         
         MapMeta meta = ((MapMeta) item.getItemMeta());
         meta.setMapView(map);
