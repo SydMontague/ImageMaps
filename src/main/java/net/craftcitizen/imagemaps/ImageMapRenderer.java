@@ -25,8 +25,6 @@ public class ImageMapRenderer extends MapRenderer {
     }
     
     public void recalculateInput(BufferedImage input) {
-        first = true;
-        
         if (x * ImageMaps.MAP_WIDTH > Math.round(input.getWidth() * scale) || y * ImageMaps.MAP_HEIGHT > Math.round(input.getHeight() * scale))
             return;
         
@@ -48,6 +46,8 @@ public class ImageMapRenderer extends MapRenderer {
             AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
             this.image = scaleOp.filter(this.image, resized);
         }
+        
+        first = true;
     }
     
     @Override
