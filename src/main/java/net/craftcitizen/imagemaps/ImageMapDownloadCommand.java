@@ -1,5 +1,6 @@
 package net.craftcitizen.imagemaps;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +8,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+
+import javax.imageio.ImageIO;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -77,8 +78,14 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
                 return;
             }
             
+            if (ImageIO.read(srcURL) == null) {
+                MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Downloaded file is not an image!");
+                return;
+            }
+            
             try (InputStream str = connection.getInputStream()) {
-                Files.copy(str, new File(plugin.getDataFolder(), "images" + File.separatorChar + filename).toPath(), StandardCopyOption.REPLACE_EXISTING);
+                BufferedImage iamge = ImageIO.read(str);
+                ImageIO.write(iamge, "PNG", new File(plugin.getDataFolder(), "images" + File.separatorChar + filename));
             }
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Download complete.");
         }

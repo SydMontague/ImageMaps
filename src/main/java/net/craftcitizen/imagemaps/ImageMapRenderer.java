@@ -34,13 +34,13 @@ public class ImageMapRenderer extends MapRenderer {
         int x2 = (int) Math.round(Math.min(input.getWidth(), ((x + 1) * ImageMaps.MAP_WIDTH / scale)));
         int y2 = (int) Math.round(Math.min(input.getHeight(), ((y + 1) * ImageMaps.MAP_HEIGHT / scale)));
         
-        if(x2 - x1 <= 0 || y2 - y1 <= 0)
+        if (x2 - x1 <= 0 || y2 - y1 <= 0)
             return;
         
         this.image = input.getSubimage(x1, y1, x2 - x1, y2 - y1);
         
         if (scale != 1D) {
-            BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT, input.getType());
+            BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT, input.getType() == 0 ? image.getType() : input.getType());
             AffineTransform at = new AffineTransform();
             at.scale(scale, scale);
             AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);

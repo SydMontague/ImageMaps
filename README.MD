@@ -35,7 +35,7 @@ found here: https://minecraft.gamepedia.com/Map_item_format#Color_table
 
 ![Example of color conversion](./colorConversion.png)
 
-The invisible and fixed item frame properties are only available in 1.16+. You can modify them for any item frame
+The invisible and fixed (-> can't be modified) item frame properties are only available in 1.16+. You can modify them for any item frame
 by using a configurable (default a wooden hoe) items. Right click to toggle visibility and Shift+Right click to 
 toggle the fixed state.
 
