@@ -36,13 +36,13 @@ public class ImageMapListCommand extends ImageMapSubCommand {
         boolean even = false;
         for(String filename : Utils.paginate(fileList, page)) {
             BaseComponent infoAction = new TextComponent("[Info]");
-            infoAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/imagemap info " + filename));
+            infoAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap info \"%s\"", filename)));
             infoAction.setColor(ChatColor.GOLD);
             BaseComponent reloadAction = new TextComponent("[Reload]");
-            reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/imagemap reload " + filename));
+            reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap reload \"%s\"", filename)));
             reloadAction.setColor(ChatColor.GOLD);
             BaseComponent placeAction = new TextComponent("[Place]");
-            placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/imagemap place " + filename));
+            placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap place \"%s\"", filename)));
             placeAction.setColor(ChatColor.GOLD);
             
             BaseComponent message = new TextComponent(filename);

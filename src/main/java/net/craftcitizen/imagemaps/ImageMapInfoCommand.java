@@ -45,10 +45,10 @@ public class ImageMapInfoCommand extends ImageMapSubCommand {
         
         Tuple<Integer, Integer> size = getPlugin().getImageSize(filename, null);
         BaseComponent reloadAction = new TextComponent("[Reload]");
-        reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/imagemap reload " + filename));
+        reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap reload \"%s\"", filename)));
         reloadAction.setColor(ChatColor.GOLD);
         BaseComponent placeAction = new TextComponent("[Place]");
-        placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/imagemap place " + filename));
+        placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap place \"%s\"", filename)));
         placeAction.setColor(ChatColor.GOLD);
         
         BaseComponent actions = new TextComponent("Action: ");

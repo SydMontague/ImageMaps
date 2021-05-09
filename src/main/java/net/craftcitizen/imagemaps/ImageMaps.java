@@ -49,6 +49,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 
+// TODO permissions per image or folder
+// TODO per-user maps
 public class ImageMaps extends JavaPlugin implements Listener {
     private static final String MAPS_YML = "maps.yml";
     private static final String CONFIG_VERSION_KEY = "storageVersion";
