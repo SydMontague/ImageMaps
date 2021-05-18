@@ -31,9 +31,9 @@ permissions:
     imagemaps.place:
         default: op
     imagemaps.download:
-      default: op
+        default: op
     imagemaps.delete:
-      default: op
+        default: op
     imagemaps.info:
         default: op
     imagemaps.list:

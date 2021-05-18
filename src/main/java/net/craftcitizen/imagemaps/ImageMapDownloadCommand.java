@@ -62,7 +62,7 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
                 return;
             }
 
-            connection.setRequestProperty("User-Agent", "ImageMap/0");
+            connection.setRequestProperty("User-Agent", "ImageMaps/0");
 
             if (((HttpURLConnection) connection).getResponseCode() != 200) {
                 MessageUtil.sendMessage(getPlugin(),
