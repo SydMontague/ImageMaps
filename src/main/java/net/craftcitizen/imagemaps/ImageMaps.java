@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -370,7 +371,28 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         return PlacementResult.SUCCESS;
     }
-    
+
+    public boolean deleteImage(String filename) {
+        File file = new File(getDataFolder(), IMAGES_DIR + File.separatorChar + filename);
+        boolean fileDeleted = false;
+        if (file.exists()) fileDeleted = file.delete();
+        imageCache.remove(filename.toLowerCase());
+        Iterator<Entry<ImageMap, Integer>> it = maps.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<ImageMap, Integer> entry = it.next();
+            ImageMap imageMap = entry.getKey();
+            if (!imageMap.getFilename().equalsIgnoreCase(filename)) continue;
+            Integer id = entry.getValue();
+            @SuppressWarnings("deprecation")
+            MapView map = Bukkit.getMap(id);
+            if (map == null) continue;
+            map.getRenderers().forEach(map::removeRenderer);
+            it.remove();
+        }
+        saveMaps();
+        return fileDeleted;
+    }
+
     @SuppressWarnings("deprecation")
     public boolean reloadImage(String filename) {
         if (!imageCache.containsKey(filename.toLowerCase()))

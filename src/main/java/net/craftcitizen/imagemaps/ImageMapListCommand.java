@@ -44,6 +44,9 @@ public class ImageMapListCommand extends ImageMapSubCommand {
             BaseComponent placeAction = new TextComponent("[Place]");
             placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap place \"%s\"", filename)));
             placeAction.setColor(ChatColor.GOLD);
+            BaseComponent deleteAction = new TextComponent("[Delete]");
+            deleteAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap delete \"%s\"", filename)));
+            deleteAction.setColor(ChatColor.RED);
             
             BaseComponent message = new TextComponent(filename);
             message.setColor(even ? ChatColor.GRAY : ChatColor.WHITE);
@@ -53,6 +56,8 @@ public class ImageMapListCommand extends ImageMapSubCommand {
             message.addExtra(reloadAction);
             message.addExtra(" ");
             message.addExtra(placeAction);
+            message.addExtra(" ");
+            message.addExtra(deleteAction);
             
             MessageUtil.sendMessage(plugin, sender, MessageLevel.NORMAL, message);
             even = !even;

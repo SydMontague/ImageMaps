@@ -10,6 +10,7 @@ commands:
         usage: |
           /imagemap place <filename> [frameVisible] [frameFixed] [size] - starts image placement
           /imagemap download <filename> <sourceURL> - downloads an image
+          /imagemap delete <filename> - deletes an image
           /imagemap info <filename> - displays image info
           /imagemap reload <filename> - reloads an image from disk
           /imagemap list [page] - lists all files in the images folder
@@ -20,6 +21,7 @@ permissions:
         children:
           imagemaps.place: true
           imagemaps.download: true
+          imagemaps.delete: true
           imagemaps.info: true
           imagemaps.list: true
           imagemaps.reload: true
@@ -29,7 +31,9 @@ permissions:
     imagemaps.place:
         default: op
     imagemaps.download:
-        default: op
+      default: op
+    imagemaps.delete:
+      default: op
     imagemaps.info:
         default: op
     imagemaps.list:
