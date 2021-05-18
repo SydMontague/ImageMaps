@@ -374,21 +374,32 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
     public boolean deleteImage(String filename) {
         File file = new File(getDataFolder(), IMAGES_DIR + File.separatorChar + filename);
+
         boolean fileDeleted = false;
-        if (file.exists()) fileDeleted = file.delete();
+        if (file.exists()) {
+            fileDeleted = file.delete();
+        }
+
         imageCache.remove(filename.toLowerCase());
+
         Iterator<Entry<ImageMap, Integer>> it = maps.entrySet().iterator();
         while (it.hasNext()) {
             Entry<ImageMap, Integer> entry = it.next();
             ImageMap imageMap = entry.getKey();
-            if (!imageMap.getFilename().equalsIgnoreCase(filename)) continue;
-            Integer id = entry.getValue();
+            if (!imageMap.getFilename().equalsIgnoreCase(filename)) {
+                continue;
+            }
+
             @SuppressWarnings("deprecation")
-            MapView map = Bukkit.getMap(id);
-            if (map == null) continue;
+            MapView map = Bukkit.getMap(entry.getValue());
+
+            if (map == null) {
+                continue;
+            }
             map.getRenderers().forEach(map::removeRenderer);
             it.remove();
         }
+
         saveMaps();
         return fileDeleted;
     }

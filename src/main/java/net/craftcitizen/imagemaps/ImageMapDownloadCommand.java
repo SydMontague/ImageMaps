@@ -80,15 +80,21 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
 
             try (InputStream str = connection.getInputStream()) {
                 BufferedImage image = ImageIO.read(str);
+                if (image == null) {
+                    MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Downloaded file is not an image!");
+                    return;
+                }
+
                 File outFile = new File(plugin.getDataFolder(), "images" + File.separatorChar + filename);
                 boolean fileExisted = outFile.exists();
                 ImageIO.write(image, "PNG", outFile);
+
                 if (fileExisted) {
                     MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "File already exists, overwriting!");
                     getPlugin().reloadImage(filename);
                 }
             } catch (IllegalArgumentException ex) {
-                MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Downloaded file is not an image!");
+                MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Received no data");
                 return;
             }
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Download complete.");
