@@ -71,21 +71,25 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
                         String.format("Download failed, HTTP Error code %d.", ((HttpURLConnection) connection).getResponseCode()));
                 return;
             }
-            
-            String mimeType = ((HttpURLConnection) connection).getHeaderField("Content-type");
+
+            String mimeType = connection.getHeaderField("Content-type");
             if (!(mimeType.startsWith("image/"))) {
                 MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, String.format("Download is a %s file, not image.", mimeType));
                 return;
             }
-            
-            if (ImageIO.read(srcURL) == null) {
+
+            try (InputStream str = connection.getInputStream()) {
+                BufferedImage image = ImageIO.read(str);
+                File outFile = new File(plugin.getDataFolder(), "images" + File.separatorChar + filename);
+                boolean fileExisted = outFile.exists();
+                ImageIO.write(image, "PNG", outFile);
+                if (fileExisted) {
+                    MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "File already exists, overwriting!");
+                    getPlugin().reloadImage(filename);
+                }
+            } catch (IllegalArgumentException ex) {
                 MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Downloaded file is not an image!");
                 return;
-            }
-            
-            try (InputStream str = connection.getInputStream()) {
-                BufferedImage iamge = ImageIO.read(str);
-                ImageIO.write(iamge, "PNG", new File(plugin.getDataFolder(), "images" + File.separatorChar + filename));
             }
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Download complete.");
         } catch (MalformedURLException ex) {
