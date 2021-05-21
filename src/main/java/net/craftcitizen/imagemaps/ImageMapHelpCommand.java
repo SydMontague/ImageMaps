@@ -30,6 +30,7 @@ public class ImageMapHelpCommand extends HelpCommand {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap place <filename> [size]", " - starts image placement"));
         
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap download <filename> <sourceURL>", " - downloads an image"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap delete <filename>", " - deletes an image"));
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap info <filename>", " - displays image info"));
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap reload <filename>", " - reloads an image from disk"));
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap list [page]", " - lists all files in the images folder"));

@@ -50,11 +50,16 @@ public class ImageMapInfoCommand extends ImageMapSubCommand {
         BaseComponent placeAction = new TextComponent("[Place]");
         placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap place \"%s\"", filename)));
         placeAction.setColor(ChatColor.GOLD);
+        BaseComponent deleteAction = new TextComponent("[Delete]");
+        deleteAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap delete \"%s\"", filename)));
+        deleteAction.setColor(ChatColor.RED);
         
         BaseComponent actions = new TextComponent("Action: ");
         actions.addExtra(reloadAction);
         actions.addExtra(" ");
         actions.addExtra(placeAction);
+        actions.addExtra(" ");
+        actions.addExtra(deleteAction);
         
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Image Information: ");
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, String.format("File Name: %s", filename));
