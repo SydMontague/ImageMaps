@@ -205,7 +205,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
                 if(isSetTrackingSupported())
                     map.setTrackingPosition(false);
                 map.getRenderers().forEach(map::removeRenderer);
-                map.addRenderer(new ImageMapRenderer(image, imageMap.getX(), imageMap.getY(), imageMap.getScale()));
+                map.addRenderer(new ImageMapRenderer(this, image, imageMap.getX(), imageMap.getY(), imageMap.getScale()));
                 maps.put(imageMap, id);
             });
     }
@@ -346,7 +346,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
                     return PlacementResult.INSUFFICIENT_WALL;
                 if (frameBlock.getType().isSolid())
                     return PlacementResult.INSUFFICIENT_SPACE;
-                if (!b.getWorld().getNearbyEntities(frameBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5, a -> (a instanceof Hanging)).isEmpty())
+                if (!b.getWorld().getNearbyEntities(frameBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5, Hanging.class::isInstance).isEmpty())
                     return PlacementResult.OVERLAPPING_ENTITY;
             }
         
@@ -418,7 +418,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         }
         
         maps.entrySet().stream().filter(a -> a.getKey().getFilename().equalsIgnoreCase(filename)).map(a -> Bukkit.getMap(a.getValue()))
-            .flatMap(a -> a.getRenderers().stream()).filter(a -> a instanceof ImageMapRenderer).forEach(a -> ((ImageMapRenderer) a).recalculateInput(image));
+            .flatMap(a -> a.getRenderers().stream()).filter(ImageMapRenderer.class::isInstance).forEach(a -> ((ImageMapRenderer) a).recalculateInput(image));
         return true;
     }
     
@@ -436,7 +436,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         
         MapView map = getServer().createMap(getServer().getWorlds().get(0));
         map.getRenderers().forEach(map::removeRenderer);
-        map.addRenderer(new ImageMapRenderer(image, x, y, getScale(image, data.getSize())));
+        map.addRenderer(new ImageMapRenderer(this, image, x, y, getScale(image, data.getSize())));
         if(isSetTrackingSupported())
             map.setTrackingPosition(false);
         
