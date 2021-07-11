@@ -10,12 +10,14 @@ public class PlacementData {
     private final String filename;
     private final boolean isInvisible;
     private final boolean isFixed;
+    private final boolean isGlowing;
     private final Tuple<Integer, Integer> scale;
     
-    public PlacementData(String filename, boolean isInvisible, boolean isFixed, Tuple<Integer, Integer> scale) {
+    public PlacementData(String filename, boolean isInvisible, boolean isFixed, boolean isGlowing, Tuple<Integer, Integer> scale) {
         this.filename = filename;
         this.isInvisible = isInvisible;
         this.isFixed = isFixed;
+        this.isGlowing = isGlowing;
         this.scale = scale;
     }
     
@@ -51,7 +53,19 @@ public class PlacementData {
     public boolean isInvisible() {
         return isInvisible;
     }
-    
+
+
+    /**
+     * Whether the placed item frame will be a glowing one.
+     *
+     * Only supported in 1.17 or higher!
+     *
+     * @return whether the placed frames will be a glowing one
+     */
+    public boolean isGlowing() {
+        return isGlowing;
+    }
+
     /**
      * The <b>requested</b> size of the image. The actual size might be smaller
      * since the plugin won't modify aspect ratios.

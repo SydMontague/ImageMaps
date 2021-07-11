@@ -23,6 +23,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.GlowItemFrame;
 import org.bukkit.entity.Hanging;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
@@ -135,7 +136,12 @@ public class ImageMaps extends JavaPlugin implements Listener {
         SemanticVersion version = Utils.getMCVersion();
         return version.getMajor() >= 1 && version.getMinor() >= 16;
     }
-    
+
+    public boolean isGlowingSupported() {
+        SemanticVersion version = Utils.getMCVersion();
+        return version.getMajor() >= 1 && version.getMinor() >= 17;
+    }
+
     public boolean isUpDownFaceSupported() {
         SemanticVersion version = Utils.getMCVersion();
         
@@ -358,7 +364,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         // spawn item frame
         for (int x = 0; x < size.getKey(); x++)
             for (int y = 0; y < size.getValue(); y++) {
-                ItemFrame frame = block.getWorld().spawn(b.getRelative(widthDirection, x).getRelative(heightDirection, y).getLocation(), ItemFrame.class);
+                Class<? extends ItemFrame> ItemFrameClass = data.isGlowing() ? GlowItemFrame.class : ItemFrame.class;
+                ItemFrame frame = block.getWorld().spawn(b.getRelative(widthDirection, x).getRelative(heightDirection, y).getLocation(), ItemFrameClass);
                 frame.setFacingDirection(face);
                 frame.setItem(getMapItem(image, x, y, data));
                 frame.setRotation(facingToRotation(heightDirection, widthDirection));

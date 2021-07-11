@@ -40,9 +40,10 @@ by using a configurable (default a wooden hoe) items. Right click to toggle visi
 toggle the fixed state.
 
 ### Commands
-* /imagemap place &lt;filename> [frameInvisible] [frameFixed] [size]
+* /imagemap place &lt;filename> [frameInvisible] [frameFixed] [frameGlowing] [size]
   * Starts the placement process
   * frameInvisible and frameFixed are only available on 1.16+
+  * frameGlowing is only available on 1.17+
 * /imagemap download &lt;filename> &lt;sourceURL>
   * downloads an image from the given URL into the `images` folder
 * /imagemap info &lt;filename>

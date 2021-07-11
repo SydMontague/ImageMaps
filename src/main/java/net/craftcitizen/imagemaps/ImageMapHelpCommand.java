@@ -21,14 +21,20 @@ public class ImageMapHelpCommand extends HelpCommand {
     
     @Override
     public void help(CommandSender sender) {
-        if (((ImageMaps) getPlugin()).isInvisibilitySupported())
+        if (((ImageMaps) getPlugin()).isGlowingSupported()) {
             MessageUtil.sendMessage(getPlugin(),
-                                    sender,
-                                    MessageLevel.NORMAL,
-                                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [size]", " - starts image placement"));
-        else
+                    sender,
+                    MessageLevel.NORMAL,
+                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [frameGlowing] [size]", " - starts image placement"));
+        } else if (((ImageMaps) getPlugin()).isInvisibilitySupported()) {
+            MessageUtil.sendMessage(getPlugin(),
+                    sender,
+                    MessageLevel.NORMAL,
+                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [size]", " - starts image placement"));
+        } else {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap place <filename> [size]", " - starts image placement"));
-        
+        }
+
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap download <filename> <sourceURL>", " - downloads an image"));
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap delete <filename>", " - deletes an image"));
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap info <filename>", " - displays image info"));
