@@ -45,6 +45,8 @@ toggle the fixed state.
   * frameInvisible and frameFixed are only available on 1.16+
 * /imagemap download &lt;filename> &lt;sourceURL>
   * downloads an image from the given URL into the `images` folder
+* /imagemap delete &lt;filename>
+  * deletes an image from the `images` folder
 * /imagemap info &lt;filename>
   * prints info, such as resolution and expected size
 * /imagemap reload &lt;filename>
@@ -57,7 +59,8 @@ toggle the fixed state.
 ### Permissions
 `imagemaps.*` - grants access to all permissions  
 `imagemaps.place` - grants access to /imagemap place command  
-`imagemaps.download` - grants access to /download place command  
+`imagemaps.download` - grants access to /imagemap download command  
+`imagemaps.delete` - grants access to /imagemap delete command  
 `imagemaps.info` - grants access to /imagemap info command  
 `imagemaps.list` - grants access to /imagemap list command  
 `imagemaps.reload` - grants access to /imagemap reload command  
