@@ -353,8 +353,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         // spawn item frame
         for (int x = 0; x < size.getKey(); x++)
             for (int y = 0; y < size.getValue(); y++) {
-                Class<? extends ItemFrame> ItemFrameClass = data.isGlowing() ? GlowItemFrame.class : ItemFrame.class;
-                ItemFrame frame = block.getWorld().spawn(b.getRelative(widthDirection, x).getRelative(heightDirection, y).getLocation(), ItemFrameClass);
+                Class<? extends ItemFrame> itemFrameClass = data.isGlowing() ? GlowItemFrame.class : ItemFrame.class;
+                ItemFrame frame = block.getWorld().spawn(b.getRelative(widthDirection, x).getRelative(heightDirection, y).getLocation(), itemFrameClass);
                 frame.setFacingDirection(face);
                 frame.setItem(getMapItem(image, x, y, data));
                 frame.setRotation(facingToRotation(heightDirection, widthDirection));
