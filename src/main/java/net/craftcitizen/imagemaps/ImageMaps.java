@@ -102,7 +102,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         if (!isInvisibilitySupported())
             return;
 
-        if (event.getRightClicked().getType() != EntityType.ITEM_FRAME && event.getRightClicked().getType() != EntityType.GLOW_ITEM_FRAME)
+        if (event.getRightClicked().getType() != EntityType.ITEM_FRAME && 
+                (!isGlowingSupported() || event.getRightClicked().getType() != EntityType.GLOW_ITEM_FRAME))
             return;
 
         ItemFrame frame = (ItemFrame) event.getRightClicked();
