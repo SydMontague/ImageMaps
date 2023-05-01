@@ -30,7 +30,8 @@ public class ImageMapRenderer extends MapRenderer {
     }
 
     public void recalculateInput(BufferedImage input) {
-        if (x * ImageMaps.MAP_WIDTH > Math.round(input.getWidth() * scale) || y * ImageMaps.MAP_HEIGHT > Math.round(input.getHeight() * scale))
+        if (x * ImageMaps.MAP_WIDTH > Math.round(input.getWidth() * scale)
+            || y * ImageMaps.MAP_HEIGHT > Math.round(input.getHeight() * scale))
             return;
 
         int x1 = (int) Math.floor(x * ImageMaps.MAP_WIDTH / scale);
@@ -45,7 +46,8 @@ public class ImageMapRenderer extends MapRenderer {
         this.image = input.getSubimage(x1, y1, x2 - x1, y2 - y1);
 
         if (scale != 1D) {
-            BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT, input.getType() == 0 ? image.getType() : input.getType());
+            BufferedImage resized = new BufferedImage(ImageMaps.MAP_WIDTH, ImageMaps.MAP_HEIGHT,
+                                                      input.getType() == 0 ? image.getType() : input.getType());
             AffineTransform at = new AffineTransform();
             at.scale(scale, scale);
             AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
@@ -58,20 +60,8 @@ public class ImageMapRenderer extends MapRenderer {
     @Override
     public void render(MapView view, MapCanvas canvas, Player player) {
         if (image != null && first) {
-            new LambdaRunnable(() -> {
-                @SuppressWarnings("deprecation")
-                byte[] imageData = MapPalette.imageToBytes(image);
-
-                new LambdaRunnable(() -> {
-                    for (int x2 = 0; x2 < image.getWidth(null); ++x2) {
-                        for (int y2 = 0; y2 < image.getHeight(null); ++y2) {
-                            canvas.setPixel(x2, y2, imageData[y2 * image.getWidth(null) + x2]);
-                        }
-                    }
-                }).runTaskLater(plugin, System.nanoTime() % 20);
-                // spread out pseudo randomly in a very naive way
-
-            }).runTaskAsynchronously(plugin);
+            new LambdaRunnable(() -> canvas.drawImage(0, 0, image)).runTaskLater(plugin, System.nanoTime() % 60);
+            // spread out pseudo randomly in a very naive way
             first = false;
         }
     }

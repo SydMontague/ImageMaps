@@ -42,7 +42,8 @@ public class ImageMapDeleteCommand extends ImageMapSubCommand {
 
         if (getPlugin().deleteImage(filename)) {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "File deleted.");
-        } else {
+        }
+        else {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Failed to delete file.");
         }
         return null;

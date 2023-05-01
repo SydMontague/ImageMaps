@@ -78,7 +78,8 @@ public class ImageMap implements ConfigurationSerializable {
         if (filename == null) {
             if (other.filename != null)
                 return false;
-        } else if (!filename.equals(other.filename))
+        }
+        else if (!filename.equals(other.filename))
             return false;
         if (Double.doubleToLongBits(scale) != Double.doubleToLongBits(other.scale))
             return false;

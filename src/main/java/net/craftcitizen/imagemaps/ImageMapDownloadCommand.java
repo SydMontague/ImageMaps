@@ -30,7 +30,8 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
         }
 
         if (args.length < 3) {
-            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "You must specify a file name and a download link.");
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING,
+                                    "You must specify a file name and a download link.");
             return null;
         }
 
@@ -65,23 +66,24 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
             connection.setRequestProperty("User-Agent", "ImageMaps/0");
 
             if (((HttpURLConnection) connection).getResponseCode() != 200) {
-                MessageUtil.sendMessage(getPlugin(),
-                        sender,
-                        MessageLevel.WARNING,
-                        String.format("Download failed, HTTP Error code %d.", ((HttpURLConnection) connection).getResponseCode()));
+                MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING,
+                                        String.format("Download failed, HTTP Error code %d.",
+                                                      ((HttpURLConnection) connection).getResponseCode()));
                 return;
             }
 
             String mimeType = connection.getHeaderField("Content-type");
             if (!(mimeType.startsWith("image/"))) {
-                MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, String.format("Download is a %s file, not image.", mimeType));
+                MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING,
+                                        String.format("Download is a %s file, not image.", mimeType));
                 return;
             }
 
             try (InputStream str = connection.getInputStream()) {
                 BufferedImage image = ImageIO.read(str);
                 if (image == null) {
-                    MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Downloaded file is not an image!");
+                    MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING,
+                                            "Downloaded file is not an image!");
                     return;
                 }
 
@@ -90,18 +92,23 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
                 ImageIO.write(image, "PNG", outFile);
 
                 if (fileExisted) {
-                    MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "File already exists, overwriting!");
+                    MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING,
+                                            "File already exists, overwriting!");
                     getPlugin().reloadImage(filename);
                 }
-            } catch (IllegalArgumentException ex) {
+            }
+            catch (IllegalArgumentException ex) {
                 MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Received no data");
                 return;
             }
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Download complete.");
-        } catch (MalformedURLException ex) {
+        }
+        catch (MalformedURLException ex) {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.WARNING, "Malformatted URL");
-        } catch (IOException ex) {
-            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.ERROR, "An IO Exception happened, see server log");
+        }
+        catch (IOException ex) {
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.ERROR,
+                                    "An IO Exception happened, see server log");
             ex.printStackTrace();
         }
     }
@@ -109,6 +116,7 @@ public class ImageMapDownloadCommand extends ImageMapSubCommand {
     @Override
     public void help(CommandSender sender) {
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Downloads an image from an URL.");
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Usage: /imagemap download <filename> <sourceURL>");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO,
+                                "Usage: /imagemap download <filename> <sourceURL>");
     }
 }

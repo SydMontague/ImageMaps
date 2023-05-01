@@ -44,10 +44,12 @@ public class ImageMapPlaceCommand extends ImageMapSubCommand {
             if (getPlugin().isGlowingSupported()) {
                 isGlowing = args.length >= 5 && Boolean.parseBoolean(args[4]);
                 scale = args.length >= 6 ? parseScale(args[5]) : new Tuple<>(-1, -1);
-            } else {
+            }
+            else {
                 scale = args.length >= 5 ? parseScale(args[4]) : new Tuple<>(-1, -1);
             }
-        } else {
+        }
+        else {
             scale = args.length >= 3 ? parseScale(args[2]) : new Tuple<>(-1, -1);
         }
 
@@ -62,14 +64,16 @@ public class ImageMapPlaceCommand extends ImageMapSubCommand {
         }
 
         Player player = (Player) sender;
-        player.setMetadata(ImageMaps.PLACEMENT_METADATA, new FixedMetadataValue(getPlugin(), new PlacementData(filename, isInvisible, isFixed, isGlowing, scale)));
+        player.setMetadata(ImageMaps.PLACEMENT_METADATA,
+                           new FixedMetadataValue(getPlugin(),
+                                                  new PlacementData(filename, isInvisible, isFixed, isGlowing, scale)));
 
         Tuple<Integer, Integer> size = getPlugin().getImageSize(filename, scale);
-        MessageUtil.sendMessage(getPlugin(),
-                sender,
-                MessageLevel.NORMAL,
-                String.format("Started placing of %s. It needs a %d by %d area.", args[1], size.getKey(), size.getValue()));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Right click on the block, that should be the upper left corner.");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                String.format("Started placing of %s. It needs a %d by %d area.", args[1],
+                                              size.getKey(), size.getValue()));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                "Right click on the block, that should be the upper left corner.");
         return null;
     }
 
@@ -78,22 +82,23 @@ public class ImageMapPlaceCommand extends ImageMapSubCommand {
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Starts placing an image.");
 
         if (getPlugin().isGlowingSupported()) {
-            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Usage: /imagemap place <filename> [frameInvisible] [frameFixed] [frameGlowing] [size]");
-        } else if (getPlugin().isInvisibilitySupported()) {
-            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Usage: /imagemap place <filename> [frameInvisible] [frameFixed] [size]");
-        } else {
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO,
+                                    "Usage: /imagemap place <filename> [frameInvisible] [frameFixed] [frameGlowing] [size]");
+        }
+        else if (getPlugin().isInvisibilitySupported()) {
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO,
+                                    "Usage: /imagemap place <filename> [frameInvisible] [frameFixed] [size]");
+        }
+        else {
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Usage: /imagemap place <filename> [size]");
         }
 
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Size format: XxY -> 5x2, use -1 for default");
-        MessageUtil.sendMessage(getPlugin(),
-                sender,
-                MessageLevel.NORMAL,
-                "The plugin will scale the map to not be larger than the given size while maintaining the aspect ratio.");
-        MessageUtil.sendMessage(getPlugin(),
-                sender,
-                MessageLevel.NORMAL,
-                "It's recommended to avoid the size function in favor of using properly sized source images.");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                "Size format: XxY -> 5x2, use -1 for default");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                "The plugin will scale the map to not be larger than the given size while maintaining the aspect ratio.");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                "It's recommended to avoid the size function in favor of using properly sized source images.");
     }
 
     private static Tuple<Integer, Integer> parseScale(String string) {
@@ -108,7 +113,7 @@ public class ImageMapPlaceCommand extends ImageMapSubCommand {
     @Override
     protected List<String> onTabComplete(CommandSender sender, String[] args) {
         if (args.length > 2 && !getPlugin().isInvisibilitySupported()
-                || args.length > 4 && !getPlugin().isGlowingSupported()) {
+            || args.length > 4 && !getPlugin().isGlowingSupported()) {
             return Collections.emptyList();
         }
 

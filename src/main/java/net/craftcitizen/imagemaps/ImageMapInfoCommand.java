@@ -44,13 +44,16 @@ public class ImageMapInfoCommand extends ImageMapSubCommand {
 
         Tuple<Integer, Integer> size = getPlugin().getImageSize(filename, null);
         BaseComponent reloadAction = new TextComponent("[Reload]");
-        reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap reload \"%s\"", filename)));
+        reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                  String.format("/imagemap reload \"%s\"", filename)));
         reloadAction.setColor(ChatColor.GOLD);
         BaseComponent placeAction = new TextComponent("[Place]");
-        placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap place \"%s\"", filename)));
+        placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                 String.format("/imagemap place \"%s\"", filename)));
         placeAction.setColor(ChatColor.GOLD);
         BaseComponent deleteAction = new TextComponent("[Delete]");
-        deleteAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap delete \"%s\"", filename)));
+        deleteAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                  String.format("/imagemap delete \"%s\"", filename)));
         deleteAction.setColor(ChatColor.RED);
 
         BaseComponent actions = new TextComponent("Action: ");
@@ -62,8 +65,10 @@ public class ImageMapInfoCommand extends ImageMapSubCommand {
 
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Image Information: ");
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, String.format("File Name: %s", filename));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, String.format("Resolution: %dx%d", image.getWidth(), image.getHeight()));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, String.format("Ingame Size: %dx%d", size.getKey(), size.getValue()));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                String.format("Resolution: %dx%d", image.getWidth(), image.getHeight()));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                String.format("Ingame Size: %dx%d", size.getKey(), size.getValue()));
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, actions);
         return null;
     }

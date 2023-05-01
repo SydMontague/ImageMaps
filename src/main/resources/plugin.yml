@@ -46,3 +46,7 @@ permissions:
         default: op
     imagemaps.toggleVisible:
         default: op
+    imagemaps.admin:
+        default: op
+        children:
+          imagemaps.*: true

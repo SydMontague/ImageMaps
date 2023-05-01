@@ -38,15 +38,18 @@ public class ImageMapReloadCommand extends ImageMapSubCommand {
         if (getPlugin().reloadImage(filename))
             MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Image reloaded.");
         else
-            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Image couldn't be reloaded (does it exist?).");
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                    "Image couldn't be reloaded (does it exist?).");
 
         return null;
     }
 
     @Override
     public void help(CommandSender sender) {
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Reloads an image from disk, to be used when the file changed.");
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, "Avoid resolution changes, since they won't be scaled.");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                "Reloads an image from disk, to be used when the file changed.");
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                "Avoid resolution changes, since they won't be scaled.");
         MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.INFO, "Usage: /imagemap reload <filename>");
     }
 

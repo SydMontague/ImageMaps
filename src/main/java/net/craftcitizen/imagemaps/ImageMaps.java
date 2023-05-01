@@ -69,9 +69,11 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        BaseComponent prefix = new TextComponent(
-                new ComponentBuilder("[").color(ChatColor.GRAY).append("ImageMaps").color(ChatColor.AQUA).append("]").color(ChatColor.GRAY).create());
-        MessageUtil.registerPlugin(this, prefix, ChatColor.GRAY, ChatColor.YELLOW, ChatColor.RED, ChatColor.DARK_RED, ChatColor.DARK_AQUA);
+        BaseComponent prefix = new TextComponent(new ComponentBuilder("[").color(ChatColor.GRAY).append("ImageMaps")
+                                                                          .color(ChatColor.AQUA).append("]")
+                                                                          .color(ChatColor.GRAY).create());
+        MessageUtil.registerPlugin(this, prefix, ChatColor.GRAY, ChatColor.YELLOW, ChatColor.RED, ChatColor.DARK_RED,
+                                   ChatColor.DARK_AQUA);
 
         if (!new File(getDataFolder(), IMAGES_DIR).exists())
             new File(getDataFolder(), IMAGES_DIR).mkdirs();
@@ -102,8 +104,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         if (!isInvisibilitySupported())
             return;
 
-        if (event.getRightClicked().getType() != EntityType.ITEM_FRAME && 
-                (!isGlowingSupported() || event.getRightClicked().getType() != EntityType.GLOW_ITEM_FRAME))
+        if (event.getRightClicked().getType() != EntityType.ITEM_FRAME
+            && (!isGlowingSupported() || event.getRightClicked().getType() != EntityType.GLOW_ITEM_FRAME))
             return;
 
         ItemFrame frame = (ItemFrame) event.getRightClicked();
@@ -116,12 +118,15 @@ public class ImageMaps extends JavaPlugin implements Listener {
             if (p.hasPermission("imagemaps.toggleFixed")) {
                 event.setCancelled(true);
                 frame.setFixed(!frame.isFixed());
-                MessageUtil.sendMessage(this, p, MessageLevel.INFO, String.format("Frame set to %s.", frame.isFixed() ? "fixed" : "unfixed"));
+                MessageUtil.sendMessage(this, p, MessageLevel.INFO,
+                                        String.format("Frame set to %s.", frame.isFixed() ? "fixed" : "unfixed"));
             }
-        } else if (p.hasPermission("imagemaps.toggleVisible")) {
+        }
+        else if (p.hasPermission("imagemaps.toggleVisible")) {
             event.setCancelled(true);
             frame.setVisible(!frame.isVisible());
-            MessageUtil.sendMessage(this, p, MessageLevel.INFO, String.format("Frame set to %s.", frame.isVisible() ? "visible" : "invisible"));
+            MessageUtil.sendMessage(this, p, MessageLevel.INFO,
+                                    String.format("Frame set to %s.", frame.isVisible() ? "visible" : "invisible"));
         }
     }
 
@@ -159,7 +164,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
         BukkitRunnable saveTask = new LambdaRunnable(() -> {
             try {
                 config.save(new File(getDataFolder(), MAPS_YML));
-            } catch (IOException e) {
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         });
@@ -190,22 +196,37 @@ public class ImageMaps extends JavaPlugin implements Listener {
                 @SuppressWarnings("deprecation")
                 MapView map = Bukkit.getMap(id);
                 BufferedImage image = getImage(imageMap.getFilename());
+                maps.put(imageMap, id);
 
                 if (image == null) {
-                    getLogger().warning(() -> "Image file " + imageMap.getFilename() + " not found. Removing map!");
+                    getLogger().warning(() -> "Image file " + imageMap.getFilename() + " not found!");
                     return;
                 }
                 if (map == null) {
-                    getLogger().warning(() -> "Map " + id + " referenced but does not exist. Removing map!");
+                    getLogger().warning(() -> "Map " + id + " referenced but does not exist!");
                     return;
                 }
 
                 if (isSetTrackingSupported())
                     map.setTrackingPosition(false);
                 map.getRenderers().forEach(map::removeRenderer);
-                map.addRenderer(new ImageMapRenderer(this, image, imageMap.getX(), imageMap.getY(), imageMap.getScale()));
-                maps.put(imageMap, id);
+                map.addRenderer(new ImageMapRenderer(this, image, imageMap.getX(), imageMap.getY(),
+                                                     imageMap.getScale()));
             });
+    }
+
+    public int cleanupMaps() {
+        int start = maps.size();
+
+        maps.entrySet().removeIf(a -> {
+            @SuppressWarnings("deprecation")
+            MapView map = Bukkit.getMap(a.getValue().intValue());
+            BufferedImage image = getImage(a.getKey().getFilename());
+
+            return map == null || image == null;
+        });
+
+        return start - maps.size();
     }
 
     private Configuration convertLegacyMaps(Configuration config) {
@@ -213,7 +234,8 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
         try {
             Files.copy(new File(getDataFolder(), MAPS_YML), new File(getDataFolder(), MAPS_YML + ".backup"));
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             getLogger().severe("Failed to backup maps.yml!");
             e.printStackTrace();
         }
@@ -244,6 +266,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
         return file.exists() && getImage(filename) != null;
     }
 
+    // TODO stop returning null, begin throwing exception
     public BufferedImage getImage(String filename) {
         if (filename.contains("/") || filename.contains("\\") || filename.contains(":")) {
             getLogger().warning("Someone tried to get image with illegal characters in file name.");
@@ -262,9 +285,13 @@ public class ImageMaps extends JavaPlugin implements Listener {
         try {
             image = ImageIO.read(file);
             imageCache.put(filename.toLowerCase(), image);
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             getLogger().log(Level.SEVERE, String.format("Error while trying to read image %s.", file.getName()), e);
         }
+
+        if (image == null)
+            getLogger().log(Level.WARNING, () -> String.format("Failed to read file as image %s.", file.getName()));
 
         return image;
     }
@@ -290,22 +317,27 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
         switch (result) {
             case INVALID_FACING:
-                MessageUtil.sendMessage(this, player, MessageLevel.WARNING, "You can't place an image on this block face.");
+                MessageUtil.sendMessage(this, player, MessageLevel.WARNING,
+                                        "You can't place an image on this block face.");
                 break;
             case INVALID_DIRECTION:
                 MessageUtil.sendMessage(this, player, MessageLevel.WARNING, "Couldn't calculate how to place the map.");
                 break;
             case EVENT_CANCELLED:
-                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL, "Image placement cancelled by another plugin.");
+                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL,
+                                        "Image placement cancelled by another plugin.");
                 break;
             case INSUFFICIENT_SPACE:
-                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL, "Map couldn't be placed, the space is blocked.");
+                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL,
+                                        "Map couldn't be placed, the space is blocked.");
                 break;
             case INSUFFICIENT_WALL:
-                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL, "Map couldn't be placed, the supporting wall is too small.");
+                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL,
+                                        "Map couldn't be placed, the supporting wall is too small.");
                 break;
             case OVERLAPPING_ENTITY:
-                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL, "Map couldn't be placed, there is another entity in the way.");
+                MessageUtil.sendMessage(this, player, MessageLevel.NORMAL,
+                                        "Map couldn't be placed, there is another entity in the way.");
                 break;
             case SUCCESS:
                 break;
@@ -342,11 +374,14 @@ public class ImageMaps extends JavaPlugin implements Listener {
                     return PlacementResult.INSUFFICIENT_WALL;
                 if (frameBlock.getType().isSolid())
                     return PlacementResult.INSUFFICIENT_SPACE;
-                if (!b.getWorld().getNearbyEntities(frameBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5, Hanging.class::isInstance).isEmpty())
+                if (!b.getWorld().getNearbyEntities(frameBlock.getLocation().add(0.5, 0.5, 0.5), 0.5, 0.5, 0.5,
+                                                    Hanging.class::isInstance)
+                      .isEmpty())
                     return PlacementResult.OVERLAPPING_ENTITY;
             }
 
-        ImagePlaceEvent event = new ImagePlaceEvent(player, block, widthDirection, heightDirection, size.getKey(), size.getValue(), data);
+        ImagePlaceEvent event = new ImagePlaceEvent(player, block, widthDirection, heightDirection, size.getKey(),
+                                                    size.getValue(), data);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())
             return PlacementResult.EVENT_CANCELLED;
@@ -355,7 +390,10 @@ public class ImageMaps extends JavaPlugin implements Listener {
         for (int x = 0; x < size.getKey(); x++)
             for (int y = 0; y < size.getValue(); y++) {
                 Class<? extends ItemFrame> itemFrameClass = data.isGlowing() ? GlowItemFrame.class : ItemFrame.class;
-                ItemFrame frame = block.getWorld().spawn(b.getRelative(widthDirection, x).getRelative(heightDirection, y).getLocation(), itemFrameClass);
+                ItemFrame frame = block.getWorld().spawn(
+                                                         b.getRelative(widthDirection, x)
+                                                          .getRelative(heightDirection, y).getLocation(),
+                                                         itemFrameClass);
                 frame.setFacingDirection(face);
                 frame.setItem(getMapItem(image, x, y, data));
                 frame.setRotation(facingToRotation(heightDirection, widthDirection));
@@ -414,8 +452,9 @@ public class ImageMaps extends JavaPlugin implements Listener {
             return false;
         }
 
-        maps.entrySet().stream().filter(a -> a.getKey().getFilename().equalsIgnoreCase(filename)).map(a -> Bukkit.getMap(a.getValue()))
-                .flatMap(a -> a.getRenderers().stream()).filter(ImageMapRenderer.class::isInstance).forEach(a -> ((ImageMapRenderer) a).recalculateInput(image));
+        maps.entrySet().stream().filter(a -> a.getKey().getFilename().equalsIgnoreCase(filename))
+            .map(a -> Bukkit.getMap(a.getValue())).flatMap(a -> a.getRenderers().stream())
+            .filter(ImageMapRenderer.class::isInstance).forEach(a -> ((ImageMapRenderer) a).recalculateInput(image));
         return true;
     }
 

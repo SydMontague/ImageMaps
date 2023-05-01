@@ -21,25 +21,34 @@ public class ImageMapHelpCommand extends HelpCommand {
     @Override
     public void help(CommandSender sender) {
         if (((ImageMaps) getPlugin()).isGlowingSupported()) {
-            MessageUtil.sendMessage(getPlugin(),
-                    sender,
-                    MessageLevel.NORMAL,
-                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [frameGlowing] [size]", " - starts image placement"));
-        } else if (((ImageMaps) getPlugin()).isInvisibilitySupported()) {
-            MessageUtil.sendMessage(getPlugin(),
-                    sender,
-                    MessageLevel.NORMAL,
-                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [size]", " - starts image placement"));
-        } else {
-            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap place <filename> [size]", " - starts image placement"));
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [frameGlowing] [size]",
+                                                 " - starts image placement"));
+        }
+        else if (((ImageMaps) getPlugin()).isInvisibilitySupported()) {
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                    buildMessage("/imagemap place <filename> [frameInvisible] [frameFixed] [size]",
+                                                 " - starts image placement"));
+        }
+        else {
+            MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                    buildMessage("/imagemap place <filename> [size]", " - starts image placement"));
         }
 
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap download <filename> <sourceURL>", " - downloads an image"));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap delete <filename>", " - deletes an image"));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap info <filename>", " - displays image info"));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap reload <filename>", " - reloads an image from disk"));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap list [page]", " - lists all files in the images folder"));
-        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL, buildMessage("/imagemap help [command]", " - shows help"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap download <filename> <sourceURL>", " - downloads an image"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap delete <filename>", " - deletes an image"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap info <filename>", " - displays image info"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap reload <filename>", " - reloads an image from disk"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap cleanup", " - removes invalid maps from plugin"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap list [page]", " - lists all files in the images folder"));
+        MessageUtil.sendMessage(getPlugin(), sender, MessageLevel.NORMAL,
+                                buildMessage("/imagemap help [command]", " - shows help"));
     }
 
     private static BaseComponent buildMessage(String str1, String str2) {

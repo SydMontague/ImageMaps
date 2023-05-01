@@ -11,6 +11,8 @@ public class ImageMapCommandHandler extends CommandHandler {
         registerSubCommand("info", new ImageMapInfoCommand(plugin));
         registerSubCommand("list", new ImageMapListCommand(plugin));
         registerSubCommand("reload", new ImageMapReloadCommand(plugin));
+        registerSubCommand("cleanup", new ImageMapCleanupCommand(plugin));
+        registerSubCommand("debuginfo", new ImageMapDebugInfoCommand(plugin));
         registerSubCommand("help", new ImageMapHelpCommand(plugin, getCommands()), "?");
     }
 }

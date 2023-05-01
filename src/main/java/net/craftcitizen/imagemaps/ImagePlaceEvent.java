@@ -23,7 +23,8 @@ public class ImagePlaceEvent extends Event implements Cancellable {
 
     private boolean cancelled;
 
-    public ImagePlaceEvent(Player player, Block block, BlockFace widthDirection, BlockFace heightDirection, int width, int height, PlacementData cache) {
+    public ImagePlaceEvent(Player player, Block block, BlockFace widthDirection, BlockFace heightDirection, int width,
+                           int height, PlacementData cache) {
         this.player = player;
         this.block = block;
         this.widthDirection = widthDirection;

@@ -30,22 +30,26 @@ public class ImageMapListCommand extends ImageMapSubCommand {
         long page = args.length >= 2 ? Utils.parseIntegerOrDefault(args[1], 0) - 1 : 0;
         int numPages = (int) Math.ceil((double) fileList.length / Utils.ELEMENTS_PER_PAGE);
 
-
-        MessageUtil.sendMessage(plugin, sender, MessageLevel.INFO, String.format("## Image List Page %d of %d ##", page + 1, numPages));
+        MessageUtil.sendMessage(plugin, sender, MessageLevel.INFO,
+                                String.format("## Image List Page %d of %d ##", page + 1, numPages));
 
         boolean even = false;
         for (String filename : Utils.paginate(fileList, page)) {
             BaseComponent infoAction = new TextComponent("[Info]");
-            infoAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap info \"%s\"", filename)));
+            infoAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                    String.format("/imagemap info \"%s\"", filename)));
             infoAction.setColor(ChatColor.GOLD);
             BaseComponent reloadAction = new TextComponent("[Reload]");
-            reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap reload \"%s\"", filename)));
+            reloadAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                      String.format("/imagemap reload \"%s\"", filename)));
             reloadAction.setColor(ChatColor.GOLD);
             BaseComponent placeAction = new TextComponent("[Place]");
-            placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap place \"%s\"", filename)));
+            placeAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                     String.format("/imagemap place \"%s\"", filename)));
             placeAction.setColor(ChatColor.GOLD);
             BaseComponent deleteAction = new TextComponent("[Delete]");
-            deleteAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, String.format("/imagemap delete \"%s\"", filename)));
+            deleteAction.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                                                      String.format("/imagemap delete \"%s\"", filename)));
             deleteAction.setColor(ChatColor.RED);
 
             BaseComponent message = new TextComponent(filename);
@@ -65,7 +69,7 @@ public class ImageMapListCommand extends ImageMapSubCommand {
 
         BaseComponent navigation = new TextComponent();
         BaseComponent prevPage = new TextComponent(String.format("<< Page %d", Math.max(page, 1)));
-        BaseComponent nextPage = new TextComponent(String.format("Page %d >>", Math.min(page + 1, numPages)));
+        BaseComponent nextPage = new TextComponent(String.format("Page %d >>", Math.min(page + 2, numPages)));
         prevPage.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/imagemap list " + Math.max(page, 1)));
         nextPage.setClickEvent(new ClickEvent(Action.RUN_COMMAND, "/imagemap list " + Math.min(page + 2, numPages)));
 
