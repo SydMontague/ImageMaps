@@ -22,6 +22,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.*;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -311,6 +312,13 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
             return;
+
+        if (event.isCancelled()
+                || event.useInteractedBlock() == Event.Result.DENY
+                || event.useItemInHand() == Event.Result.DENY) {
+            player.removeMetadata(PLACEMENT_METADATA, this);
+            return;
+        }
 
         PlacementData data = (PlacementData) player.getMetadata(PLACEMENT_METADATA).get(0).value();
         PlacementResult result = placeImage(player, event.getClickedBlock(), event.getBlockFace(), data);
