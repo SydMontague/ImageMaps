@@ -132,12 +132,12 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
     public boolean isInvisibilitySupported() {
         SemanticVersion version = Utils.getMCVersion();
-        return version.getMajor() >= 1 && version.getMinor() >= 16;
+        return (version.getMajor() == 1 && version.getMinor() >= 16) || version.getMajor() >= 26;
     }
 
     public boolean isGlowingSupported() {
         SemanticVersion version = Utils.getMCVersion();
-        return version.getMajor() >= 1 && version.getMinor() >= 17;
+        return (version.getMajor() == 1 && version.getMinor() >= 17) || version.getMajor() >= 26;
     }
 
     public boolean isUpDownFaceSupported() {
@@ -145,7 +145,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
 
         if (version.getMajor() < 1)
             return false;
-        if (version.getMajor() == 1 && version.getMinor() == 14 && version.getRevision() >= 4)
+        if ((version.getMajor() == 1 && version.getMinor() == 14 && version.getRevision() >= 4)  || version.getMajor() >= 26)
             return true;
         return version.getMinor() > 14;
     }
@@ -153,7 +153,7 @@ public class ImageMaps extends JavaPlugin implements Listener {
     public boolean isSetTrackingSupported() {
         SemanticVersion version = Utils.getMCVersion();
 
-        return version.getMajor() >= 1 && version.getMinor() >= 14;
+        return (version.getMajor() == 1 && version.getMinor() >= 14) || version.getMajor() >= 26;
     }
 
     private void saveMaps() {
