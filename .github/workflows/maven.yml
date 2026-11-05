@@ -13,17 +13,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up JDK 1.8
-      uses: actions/setup-java@v1
+    - uses: actions/checkout@v7
+    - name: Set up JDK 25
+      uses: actions/setup-java@v6
       with:
-        java-version: 1.8
+        java-version: 25
+        distribution: temurin
     - name: Build with Maven
       run: |
         mkdir -p ~/.m2
         echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ github.token }}</password></server></servers></settings>" > ~/.m2/settings.xml
         mvn -B package --file pom.xml
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v7
       with:
         name: Package
         path: target/ImageMaps.jar
